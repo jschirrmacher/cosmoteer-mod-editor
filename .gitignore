@@ -80,3 +80,5 @@ yarn-debug.log*
 yarn-error.log*
 
 .idea
+
+backend/mods

@@ -7,7 +7,11 @@
 
 const fs = require('fs')
 const express = require('express')
+const parser = require("./parseFile.js")
+
 const app = express()
+
+const test = parser.readFile("./mods/jasper.mod/mod.txt");
 
 app.use((req, res, next) => {
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate')

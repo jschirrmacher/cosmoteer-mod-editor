@@ -26,7 +26,7 @@ class App extends Component {
                 </div>
                 <ul className="App-intro">
             {this.state.mods.length
-                ? this.state.mods.map((row) => <Row key={row.id} name={row.name} />)
+                ? this.state.mods.map((row) => <Row key={row.id} data={row} />)
                 : 'Keine Mods gefunden'
                 }
                 </ul>

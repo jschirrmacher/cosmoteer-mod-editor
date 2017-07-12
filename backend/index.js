@@ -7,11 +7,10 @@
 
 const fs = require('fs')
 const express = require('express')
-const parser = require("./parseFile.js")
+const parser = require("./parseFile")
+const glob = require("glob")
 
 const app = express()
-
-const test = parser.readFile("./mods/jasper.mod/mod.txt");
 
 app.use((req, res, next) => {
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate')
@@ -22,7 +21,18 @@ app.use((req, res, next) => {
 })
 
 app.get('/mods', (req, res) => {
-    fs.readdir('mods', (err, files) => res.json({mods: files.map((file, index) => ({id: index + 1, name: file}))}))
+    glob('mods/*/mod.txt', (err, files) => { console.log(files); res.json({
+        mods: files.map(file => {
+            let data = parser.readFile(file)
+            return {
+                id: file,
+                title: data.Name,
+                author: data.Author,
+                version: data.Version,
+                description: data.Description
+            }
+        })
+    })})
 })
 
 app.listen(3001)

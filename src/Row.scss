@@ -1,0 +1,19 @@
+li {
+  list-style: none;
+
+  img {
+    float: left;
+    width: 80px;
+    height: 80px;
+    margin-right: 5px;
+  }
+
+  .title {
+    display: block;
+    font-size: 120%;
+  }
+
+  .author {
+    display: block;
+  }
+}

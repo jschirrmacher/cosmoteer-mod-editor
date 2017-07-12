@@ -9,14 +9,12 @@ class App extends Component {
     }
 
     componentWillMount() {
-        const req = new XMLHttpRequest()
-        req.onload = this.listener.bind(this)
-        req.open('get', 'http://localhost:3001/mods')
-        req.send()
-    }
-
-    listener(event) {
-        this.setState(JSON.parse(event.currentTarget.responseText))
+        fetch('/mods')
+            .then(res => res.json())
+            .then(state => this.setState(state))
+            .catch((e) => {
+                throw new Error('fetch failed: ' + e)
+            })
     }
 
     render() {

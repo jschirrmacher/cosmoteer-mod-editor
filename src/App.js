@@ -106,6 +106,7 @@ class App extends Component {
                         </div>
                         <input className="newModSubmit" type="submit" value="Create Mod"/>
                     </form>
+                    <p id="newModError">Error</p>
                 </div>
             </div>
 

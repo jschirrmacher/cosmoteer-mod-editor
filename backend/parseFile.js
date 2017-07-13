@@ -22,18 +22,32 @@ exports.readFile = (fileName) => {
     let toAdd = undefined
     lines.forEach(line => {
         //Test if comma
-        if(line.substr(0, 2) === "//") return
+        if (line.substr(0, 2) === "//") return
+
+        line = line.replace(/\\n/g, "\n")
+        console.log(line)
         //Should add to last
-        if(toAdd) {
+        if (toAdd) {
+            let cont = false
+            if (line.substr(-1) === '\\') {
+                line = line.substr(0, line.length - 1)
+                cont = true
+            }
             active[toAdd] += line.trim().replace(/^"|"$/g, '')
-            if(active[toAdd].substr(-1) !== "\\") toAdd = undefined
+            if (!cont) {
+                toAdd = undefined
+            }
             return
         }
         //Test if value declaration
         const splitLine = line.split("=")
-        if(splitLine.length === 2){
-            active[splitLine[0].trim()] = splitLine[1].trim().replace(/^"|"$/g, '')
-            if(active[splitLine[0].trim()].substr(-1) === "\\") toAdd = splitLine[0].trim()
+        if (splitLine.length === 2){
+            let key = splitLine[0].trim()
+            if (line.substr(-1) === "\\") {
+                splitLine[1] = splitLine[1].substr(0, splitLine[1].length - 1)
+                toAdd = key
+            }
+            active[key] = splitLine[1].trim().replace(/^"|"$/g, '')
         }
         //
         else{

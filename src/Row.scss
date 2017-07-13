@@ -27,5 +27,11 @@ li {
     display: block;
     font-size: 90%;
     clear: both;
+    white-space: pre;
+    line-height: 1;
+
+    green {
+      color: green;
+    }
   }
 }

@@ -9,7 +9,13 @@ class Row extends Component {
     }
 
     render() {
-        let description = this.state.active ? <span className="description">{this.props.data.description}</span> : ''
+        function getDescription(data) {
+            return {__html: data.description}
+        }
+
+        let description = this.state.active ?
+            <span className="description" dangerouslySetInnerHTML={getDescription(this.props.data)}></span> :
+            ''
         return (
             <li onClick={() => this.select()}>
                 <img src={this.props.data.logo} />

@@ -4,6 +4,7 @@ const fs = require('fs')
 const path = require('path')
 const parser = require("./parseFile")
 const glob = require('glob')
+const stripJs = require('strip-js')
 
 module.exports = {
     listMods: (req, res) => {
@@ -16,7 +17,7 @@ module.exports = {
                     title: data.Name,
                     author: data.Author,
                     version: data.Version,
-                    description: data.Description,
+                    description: stripJs(data.Description),
                     logo: '/mods/' + id + '/media/' + data.Logo
                 }
             })

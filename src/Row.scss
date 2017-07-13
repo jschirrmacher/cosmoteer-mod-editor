@@ -1,11 +1,17 @@
 li {
   list-style: none;
+  border: 1px solid #ddd;
+  padding: 10px;
+  min-height: 80px;
+  margin: 0 10px;
+  cursor: pointer;
 
   img {
     float: left;
     width: 80px;
     height: 80px;
     margin-right: 5px;
+    margin-bottom: 5px;
   }
 
   .title {
@@ -15,5 +21,11 @@ li {
 
   .author {
     display: block;
+  }
+
+  .description {
+    display: block;
+    font-size: 90%;
+    clear: both;
   }
 }

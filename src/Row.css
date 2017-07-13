@@ -1,14 +1,24 @@
 li {
-  list-style: none; }
+  list-style: none;
+  border: 1px solid #ddd;
+  padding: 10px;
+  min-height: 80px;
+  margin: 0 10px;
+  cursor: pointer; }
   li img {
     float: left;
     width: 80px;
     height: 80px;
-    margin-right: 5px; }
+    margin-right: 5px;
+    margin-bottom: 5px; }
   li .title {
     display: block;
     font-size: 120%; }
   li .author {
     display: block; }
+  li .description {
+    display: block;
+    font-size: 90%;
+    clear: both; }
 
 /*# sourceMappingURL=Row.css.map */

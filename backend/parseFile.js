@@ -19,13 +19,21 @@ exports.readFile = (fileName) => {
     data.randomData = []
     let stack = [data]
     let active = data
+    let toAdd = undefined
     lines.forEach(line => {
         //Test if comma
         if(line.substr(0, 2) === "//") return
+        //Should add to last
+        if(toAdd) {
+            active[toAdd] += line.trim().replace(/^"|"$/g, '')
+            if(active[toAdd].substr(-1) !== "\\") toAdd = undefined
+            return
+        }
         //Test if value declaration
         const splitLine = line.split("=")
         if(splitLine.length === 2){
             active[splitLine[0].trim()] = splitLine[1].trim().replace(/^"|"$/g, '')
+            if(active[splitLine[0].trim()].substr(-1) === "\\") toAdd = splitLine[0].trim()
         }
         //
         else{

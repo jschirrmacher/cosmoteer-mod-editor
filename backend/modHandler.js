@@ -34,11 +34,13 @@ module.exports = {
 
     createMod: (req,res) =>{
         console.log(req.body)
-        if(fs.existsSync(path.join(__dirname, "mods", req.body.id))) {
-            res.send("Already exists!")
+        const dPath = path.join(__dirname, "mods", req.body.id)
+        if(fs.existsSync(dPath)) {
+            console.log("Project already exits!")
+            res.json({error:"A mod with this ID already exists!"})
             return
         }
-        fs.mkdirSync(path.join(__dirname, "mods", req.body.id));
+        fs.mkdirSync(dPath);
         //Create Text
         let txt = ""
         let rules = JSON.parse(fs.readFileSync("./templates/mod.json","utf8"))
@@ -56,9 +58,11 @@ module.exports = {
             }
         })
         //Create mod.txt
-        fs.writeFile(path.join(__dirname, "/mods/", req.body.id, "/mod.txt"), txt, (err) => {
+        const file = path.join(__dirname, "/mods/", req.body.id, "/mod.txt")
+        fs.writeFile(file, txt, (err) => {
             if (err) console.log(err)
         })
-        res.send("OK")
+        let newMod = parser(file);
+        res.json(newMod)
     }
 }

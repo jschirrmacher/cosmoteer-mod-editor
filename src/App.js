@@ -32,6 +32,16 @@ class App extends Component {
         let data = this.state.newMod
         if(data.id != undefined && data.name != undefined && data.author != undefined && data.version != undefined){
             fetch("/mods", {method: 'POST', body: JSON.stringify(this.state.newMod), headers: {'Content-Type':'application/json'}})
+            .then((response) => response.json())
+            .then((response) => {
+                if (!response.error) {
+                    this.setState((state) => {
+                        state.mods.push(response)
+                        return state
+                    })
+                }
+                else alert(response.error)
+            })
         } else{
             alert("Please fill out all fields")
         }

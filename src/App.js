@@ -18,12 +18,22 @@ class App extends Component {
     }
 
     componentWillMount() {
+        let newMods = undefined
         fetch('/mods')
             .then(res => res.json())
-            .then(state => this.setState(state))
+            .then(state => {
+                newMods = state.mods
+                //Sort mods
+                newMods.sort((a, b) => {
+                    let textA = a.title.toUpperCase();
+                    let textB = b.title.toUpperCase();
+                    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                })
+                this.setState({mods: newMods})})
             .catch((e) => {
                 throw new Error('fetch failed: ' + e)
             })
+
     }
 
     handleSubmit(event) {
@@ -36,6 +46,11 @@ class App extends Component {
                 if (!response.error) {
                     this.setState((state) => {
                         state.mods.push(response)
+                        state.sort((a, b) => {
+                            let textA = a.title.toUpperCase();
+                            let textB = b.title.toUpperCase();
+                            return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                        })
                         return state
                     })
                 }

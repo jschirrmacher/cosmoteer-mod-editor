@@ -22,3 +22,34 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+.addMod{
+    border: 1px solid #ddd;
+    padding: 10px;
+    min-height: 80px;
+    margin: 0 10px;
+}
+.addModImage{
+    width:80px;
+    height:80px;
+    position: absolute;
+}
+.addModForm{
+    margin-left: 90px;
+}
+.newModDiv{
+    width:20%;
+    margin-bottom: 5px;
+}
+.newModInput{
+    float:right;
+}
+
+.newModSubmit{
+    left: 35%;
+    position: fixed;
+    margin-top: -5%;
+    background-color: lightblue;
+    border: darkblue 1px solid;
+    padding: 8px;
+    border-radius: 6px;
+}

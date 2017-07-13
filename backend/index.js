@@ -44,7 +44,12 @@ app.get('/mods', (req, res) => {
 })
 
 app.get('/mods/:mod/media/:file', (req, res) => {
-    res.sendFile(path.join(__dirname, 'mods', req.params.mod, req.params.file))
+    var file = path.join(__dirname, 'mods', req.params.mod, req.params.file)
+    if (fs.existsSync(file)) {
+        res.sendFile(file)
+    } else {
+        res.sendFile(path.join(__dirname, 'plug.png'))
+    }
 })
 
 app.listen(3001)

@@ -1,26 +1,19 @@
 li {
   list-style: none;
   border: 1px solid #ddd;
-  padding: 10px;
+  padding: 10px 10px 10px 100px;
   min-height: 80px;
   margin: 0 10px;
-  cursor: pointer;
 
   img {
-    float: left;
+    position: absolute;
+    left: 20px;
     width: 80px;
     height: 80px;
-    margin-right: 5px;
-    margin-bottom: 5px;
   }
 
-  .title {
-    display: block;
+  input[name='title'] {
     font-size: 120%;
-  }
-
-  .author {
-    display: block;
   }
 
   .description {
@@ -29,9 +22,17 @@ li {
     clear: both;
     white-space: pre;
     line-height: 1;
+    margin-top: 1em;
 
     green {
       color: green;
     }
+  }
+
+  input {
+    display: block;
+    width: 100%;
+    font-size: 100%;
+    border: none;
   }
 }

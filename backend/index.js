@@ -7,6 +7,7 @@
 
 const express = require('express')
 const modHandler = require('./modHandler')
+const bodyParser = require("body-parser")
 
 const app = express()
 
@@ -15,6 +16,9 @@ app.use((req, res, next) => {
     next()
 })
 
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended:false}))
+
 app.use((req, res, next) => {
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate')
     res.header('Expires', '-1')
@@ -22,6 +26,8 @@ app.use((req, res, next) => {
     res.charset = 'utf-8'
     next()
 })
+
+app.post("/mods", modHandler.createMod)
 
 app.get('/mods', modHandler.listMods)
 app.get('/mods/:mod/media/:file', modHandler.getMediaFile)

@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/jschirrmacher/cosmoteer-mod-editor#readme",
   "dependencies": {
+    "body-parser": "^1.17.2",
     "express": "^4.15.3",
     "node-tokenizer": "0.0.0",
     "strip-js": "^1.0.6"

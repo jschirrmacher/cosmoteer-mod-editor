@@ -4,8 +4,18 @@ import './App.css'
 import Row from './ModRow'
 
 class App extends Component {
+
     state = {
-        mods: []
+        mods: [],
+        newMod: {}
+    }
+
+    handleInputChange(event) {
+        const target = event.target;
+        this.setState((state, props) => {
+            state.newMod[target.name] = target.value
+            return state
+        })
     }
 
     componentWillMount() {
@@ -15,6 +25,11 @@ class App extends Component {
             .catch((e) => {
                 throw new Error('fetch failed: ' + e)
             })
+    }
+
+    handleSubmit(event) {
+        fetch("/mods", {method: 'POST', body: JSON.stringify(this.state.newMod), headers: {'Content-Type':'application/json'}})
+        event.preventDefault()
     }
 
     render() {
@@ -32,21 +47,21 @@ class App extends Component {
                 </ul>
                 <div className="addMod">
                     <img className="addModImage" src="/mods/x/media/logo.png"/>
-                    <form className="addModForm">
+                    <form className="addModForm" onSubmit={(event) => this.handleSubmit(event)}>
                         <div className="newModDiv" id="newModID">
                             Mod ID:
-                            <input className="newModInput" type="text" name="id"/>
+                            <input className="newModInput" type="text" name="id" onChange={(event) => this.handleInputChange(event)}/>
                         </div>
                         <div className="newModDiv" id="newModName">
                             Name:
-                            <input className="newModInput" type="text" name="name"/>
+                            <input className="newModInput" type="text" name="name" onChange={(event) => this.handleInputChange(event)}/>
                         </div>
                         <div className="newModDiv" id="newModAuthor">
                             Author:
-                            <input className="newModInput" type="text" name="author"/>
+                            <input className="newModInput" type="text" name="author" onChange={(event) => this.handleInputChange(event)}/>
                         </div>
                         <div className="newModDiv" id="newModVersion">
-                            Version: <input className="newModInput" type="text" name="version"/>
+                            Version: <input className="newModInput" type="text" name="version" onChange={(event) => this.handleInputChange(event)}/>
                         </div>
                         <input className="newModSubmit" type="submit" value="Create Mod"/>
                     </form>

@@ -30,5 +30,15 @@ module.exports = {
         } else {
             res.sendFile(path.join(__dirname, 'plug.png'))
         }
+    },
+
+    createMod: (req,res) =>{
+        console.log(req.body)
+        if(fs.existsSync(path.join(__dirname, "mods", req.body.id))) {
+            res.send("Already exists!")
+            return
+        }
+        fs.mkdirSync(path.join(__dirname, "mods", req.body.id));
+        res.send("OK")
     }
 }

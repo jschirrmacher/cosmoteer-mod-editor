@@ -25,7 +25,7 @@ exports.readFile = (fileName) => {
         //Test if value declaration
         const splitLine = line.split("=")
         if(splitLine.length === 2){
-            active[splitLine[0].trim()] = splitLine[1].trim()
+            active[splitLine[0].trim()] = splitLine[1].trim().replace(/^"|"$/g, '')
         }
         //
         else{

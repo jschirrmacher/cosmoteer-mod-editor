@@ -66,7 +66,7 @@ module.exports = {
         fs.writeFile(file, txt, (err) => {
             if (err) console.log(err)
         })
-        let newMod = parser(file);
+        let newMod = parser.readFile(file);
         res.json(newMod)
     },
 

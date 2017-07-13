@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import logo from './logo.svg'
 import './App.css'
 import Row from './ModRow'
 
@@ -52,8 +51,8 @@ class App extends Component {
         return (
             <div className="App">
                 <div className="App-header">
-                    <img src={logo} className="App-logo" alt="logo" />
-                    <h2>Cosmoteer Mod Editor</h2>
+                    <img src="https://cosmoteer.net/site_images/logo.png" className="App-logo" alt="logo" />
+                    <h2>Mod Editor</h2>
                 </div>
                 <ul className="App-intro">
                 {this.state.mods.length

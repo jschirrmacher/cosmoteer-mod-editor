@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import './Row.css'
+import './ModRow.css'
 
-class Row extends Component {
+class ModRow extends Component {
     state = {active: false}
 
     select() {
@@ -28,4 +28,4 @@ class Row extends Component {
     }
 }
 
-export default Row
+export default ModRow

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import logo from './logo.svg'
 import './App.css'
-import Row from './Row'
+import Row from './ModRow'
 
 class App extends Component {
     state = {

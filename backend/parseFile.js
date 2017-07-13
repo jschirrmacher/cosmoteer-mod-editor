@@ -11,14 +11,17 @@ tokeniser.rule("objectStart", /^[a-zA-Z]+\s*\{/)
 tokeniser.rule("bracket", /^[\[\]\{\}]/)
 tokeniser.rule("string", /^[^\r\n\[\]\{\}]+/)
 
+let data = {}
+let stack = [data]
+let active = data
+let toAdd = undefined
 
 exports.readFile = (fileName) => {
     const lines = tokeniser.tokenize(fs.readFileSync(fileName).toString()).map(element => element.trim()).filter(element => !element.match(/^$/))
-    let data = {}
-    data.randomData = []
-    let stack = [data]
-    let active = data
-    let toAdd = undefined
+    data = {randomData: []}
+    stack = [data]
+    active = data
+    toAdd = undefined
     lines.forEach(line => {
         //Test if comma
         if (line.substr(0, 2) === "//") return

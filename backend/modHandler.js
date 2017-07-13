@@ -39,6 +39,26 @@ module.exports = {
             return
         }
         fs.mkdirSync(path.join(__dirname, "mods", req.body.id));
+        //Create Text
+        let txt = ""
+        let rules = JSON.parse(fs.readFileSync("./templates/mod.json","utf8"))
+        rules.forEach(line => {
+            switch(line.typ){
+                case "copy":
+                    txt += line.text + "\n"
+                    break
+                case "combine":
+                    if(line.quote){
+                        txt += line.text + '\"' + req.body[line.value] + '\" \n'
+                    } else{
+                        txt += line.text + req.body[line.value] + "\n"
+                    }
+            }
+        })
+        //Create mod.txt
+        fs.writeFile(path.join(__dirname, "/mods/", req.body.id, "/mod.txt"), txt, (err) => {
+            if (err) console.log(err)
+        })
         res.send("OK")
     }
 }

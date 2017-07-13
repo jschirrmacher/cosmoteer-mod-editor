@@ -12,7 +12,7 @@ class App extends Component {
 
     handleInputChange(event) {
         const target = event.target;
-        this.setState((state, props) => {
+        this.setState((state) => {
             state.newMod[target.name] = target.value
             return state
         })
@@ -28,7 +28,13 @@ class App extends Component {
     }
 
     handleSubmit(event) {
-        fetch("/mods", {method: 'POST', body: JSON.stringify(this.state.newMod), headers: {'Content-Type':'application/json'}})
+        //Check if all data is there
+        let data = this.state.newMod
+        if(data.id != undefined && data.name != undefined && data.author != undefined && data.version != undefined){
+            fetch("/mods", {method: 'POST', body: JSON.stringify(this.state.newMod), headers: {'Content-Type':'application/json'}})
+        } else{
+            alert("Please fill out all fields")
+        }
         event.preventDefault()
     }
 

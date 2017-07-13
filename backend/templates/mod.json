@@ -5,5 +5,5 @@
   {"text": "Version = ", "typ" : "combine", "value":"version", "quote":false},
   {"text": "//Author of mod", "typ" : "copy"},
   {"text": "Author = ", "typ" : "combine", "value":"author", "quote" : true},
-  {"test" : "Description = \"Please add a description\"", "typ":"copy"}
+  {"text" : "Description = \"Please add a description\"", "typ":"copy"}
 ]

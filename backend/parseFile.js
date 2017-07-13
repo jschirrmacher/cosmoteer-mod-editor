@@ -14,7 +14,6 @@ tokeniser.rule("string", /^[^\r\n\[\]\{\}]+/)
 
 exports.readFile = (fileName) => {
     const lines = tokeniser.tokenize(fs.readFileSync(fileName).toString()).map(element => element.trim()).filter(element => !element.match(/^$/))
-    console.log(lines)
     let data = {}
     data.randomData = []
     let stack = [data]
@@ -25,7 +24,6 @@ exports.readFile = (fileName) => {
         if (line.substr(0, 2) === "//") return
 
         line = line.replace(/\\n/g, "\n")
-        console.log(line)
         //Should add to last
         if (toAdd) {
             let cont = false
@@ -82,6 +80,5 @@ exports.readFile = (fileName) => {
             }
         }
     })
-    console.log(data)
     return data;
 }

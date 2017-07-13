@@ -46,8 +46,8 @@
 
 .newModSubmit{
     left: 35%;
-    position: fixed;
-    margin-top: -5%;
+    position: absolute;
+    margin-top: -63px;
     background-color: lightblue;
     border: darkblue 1px solid;
     padding: 8px;

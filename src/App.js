@@ -38,7 +38,7 @@ class App extends Component {
     handleSubmit(event) {
         //Check if all data is there
         let data = this.state.newMod
-        if(data.id != undefined && data.name != undefined && data.author != undefined && data.version != undefined){
+        if (data.id !== undefined && data.name !== undefined && data.author !== undefined && data.version !== undefined) {
             fetch("/mods", {method: 'POST', body: JSON.stringify(this.state.newMod), headers: {'Content-Type':'application/json'}})
             .then((response) => response.json())
             .then((response) => {
@@ -67,6 +67,8 @@ class App extends Component {
                 mods[index] = value
                 this.setState({mods})
                 return true
+            } else {
+                return false
             }
         }, this)
     }
@@ -85,7 +87,7 @@ class App extends Component {
                 }
                 </ul>
                 <div className="addMod">
-                    <img className="addModImage" src="/mods/x/media/logo.png"/>
+                    <img className="addModImage" src="/mods/x/media/logo.png" alt="" />
                     <form className="addModForm" onSubmit={(event) => this.handleSubmit(event)}>
                         <div className="newModDiv" id="newModID">
                             Mod ID:

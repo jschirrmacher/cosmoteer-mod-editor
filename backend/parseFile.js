@@ -11,13 +11,17 @@ tokeniser.rule("objectStart", /^[a-zA-Z]+\s*\{/)
 tokeniser.rule("bracket", /^[\[\]\{\}]/)
 tokeniser.rule("string", /^[^\r\n\[\]\{\}]+/)
 
+exports.preparseFile = (text) => {
+    return tokeniser.tokenize(text).map(element => element.trim()).filter(element => !element.match(/^$/))
+}
+
 let data = {}
 let stack = [data]
 let active = data
 let toAdd = undefined
 
 exports.readFile = (fileName) => {
-    const lines = tokeniser.tokenize(fs.readFileSync(fileName).toString()).map(element => element.trim()).filter(element => !element.match(/^$/))
+    const lines = preparseRile(fs.readFileSync(fileName).toString())
     data = {randomData: []}
     stack = [data]
     active = data

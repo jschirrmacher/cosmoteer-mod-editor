@@ -18,20 +18,15 @@ class App extends Component {
         })
     }
 
+    static titleSort(a, b) {
+        return a.title.localeCompare(b.title)
+    }
+
     componentWillMount() {
-        let newMods = undefined
         fetch('/mods')
             .then(res => res.json())
-            .then(state => {
-                newMods = state.mods
-                //Sort mods
-                newMods.sort((a, b) => {
-                    let textA = a.title.toUpperCase();
-                    let textB = b.title.toUpperCase();
-                    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-                })
-                this.setState({mods: newMods})})
-            .catch((e) => {
+            .then(state => this.setState({mods: state.mods.sort(App.titleSort)}))
+            .catch(e => {
                 throw new Error('fetch failed: ' + e)
             })
     }
@@ -40,34 +35,30 @@ class App extends Component {
         //Check if all data is there
         let data = this.state.newMod
         if (data.id !== undefined && data.name !== undefined && data.author !== undefined && data.version !== undefined) {
-            fetch("/mods", {method: 'POST', body: JSON.stringify(this.state.newMod), headers: {'Content-Type':'application/json'}})
-            .then((response) => response.json())
-            .then((response) => {
-                if (!response.error) {
-                    this.setState((state) => {
+            let form = event.target
+            fetch("/mods", {
+                method: 'POST',
+                body: JSON.stringify(this.state.newMod),
+                headers: {'Content-Type': 'application/json'}
+            })
+                .then(response => response.json())
+                .then(response => {
+                    if (response.error) {
+                        throw response.error
+                    }
+                    this.setState(state => {
                         state.mods.push(response)
-                        state.mods.sort((a, b) => {
-                            let textA = a.title.toUpperCase();
-                            let textB = b.title.toUpperCase();
-                            return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-                        })
+                        state.mods.sort(App.titleSort)
                         state.newModData.hasError = false
                         return state
                     })
-                }
-                else{
-                    this.setState((state) => {
-                        state.newModData.hasError = true
-                        state.newModData.message = response.error
-                    })
-                }
-            })
+                    form.reset()
+                })
+                .catch(e => {
+                    this.setState({newModData: {hasError: true, message: e}})
+                })
         } else{
-            this.setState((state) => {
-                state.newModData.hasError = true
-                state.newModData.message = "Please fill in all fields!"
-                return state
-            })
+            this.setState({newModData: {hasError: true, message: "Please fill in all fields!"}})
         }
         event.preventDefault()
     }

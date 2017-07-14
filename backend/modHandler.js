@@ -36,7 +36,7 @@ module.exports = {
         }
     },
 
-    createMod: (req,res) =>{
+    createMod: (req,res) => {
         console.log(req.body)
         const dPath = path.join(__dirname, "mods", req.body.id)
         if(fs.existsSync(dPath)) {
@@ -63,16 +63,18 @@ module.exports = {
         })
         //Create mod.txt
         const file = path.join(__dirname, "/mods/", req.body.id, "/mod.txt")
-        fs.writeFile(file, txt, (err) => {
-            if (err) console.log(err)
+        fs.writeFile(file, txt, err => {
+            if (err) {
+                res.json({error: err})
+            } else {
+                res.json(readModFile(req.body.id))
+            }
         })
-        let newMod = parser.readFile(file);
-        res.json(newMod)
     },
 
     uploadPicture: (req,res) => {
         if(req.busboy){
-            req.busboy.on("file", (fieldName, fileStream, fileName, encoding, mimeType) =>{
+            req.busboy.on("file", (fieldName, fileStream, fileName) =>{
                 let newPath = path.join(__dirname, "mods", req.params.mod, fileName)
                 fileStream.pipe(fs.createWriteStream(newPath))
                 res.json("Sucess")

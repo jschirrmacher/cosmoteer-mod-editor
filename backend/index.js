@@ -28,6 +28,7 @@ app.use((req, res, next) => {
 })
 
 app.post("/mods", modHandler.createMod)
+app.put('/mods/:mod', modHandler.updateMod)
 
 app.get('/mods', modHandler.listMods)
 app.get('/mods/:mod/media/:file', modHandler.getMediaFile)

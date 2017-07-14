@@ -6,22 +6,26 @@ const parser = require("./parseFile")
 const glob = require('glob')
 const stripJs = require('strip-js')
 
+function readModFile(modId) {
+    var fileName = path.join(__dirname, '/mods/', modId, '/mod.txt')
+    let data = parser.readFile(fileName)
+    return {
+        id: modId,
+        title: data.Name,
+        author: data.Author,
+        version: data.Version,
+        description: stripJs(data.Description),
+        logo: '/mods/' + modId + '/media/' + data.Logo
+    }
+}
+
 module.exports = {
     listMods: (req, res) => {
-        glob('mods/*/mod.txt', (err, files) => { console.log(files); res.json({
-            mods: files.map(file => {
-                let data = parser.readFile(file)
-                let id = file.replace(/mods\/(.*?)\/mod.txt/, '$1')
-                return {
-                    id: id,
-                    title: data.Name,
-                    author: data.Author,
-                    version: data.Version,
-                    description: stripJs(data.Description),
-                    logo: '/mods/' + id + '/media/' + data.Logo
-                }
+        glob('mods/*/mod.txt', (err, files) => {
+            res.json({
+                mods: files.map(file => readModFile(file.replace(/mods\/(.*?)\/mod.txt/, '$1')))
             })
-        })})
+        })
     },
     getMediaFile: (req, res) => {
         var file = path.join(__dirname, 'mods', req.params.mod, req.params.file)
@@ -64,5 +68,24 @@ module.exports = {
         })
         let newMod = parser(file);
         res.json(newMod)
+    },
+
+    updateMod: (req, res) => {
+        let fileName = path.join(__dirname, "mods", req.params.mod, '/mod.txt')
+        if (!fs.existsSync(fileName)) {
+            res.json({error: 'Mod does not exist'})
+        } else {
+            let mod = fs.readFileSync(fileName).toString()
+            mod = mod.replace(/Name\s*=\s*.*\n/i, 'Name="' + req.body.title + '"\n')
+            mod = mod.replace(/Version\s*=\s*.*\n/i, 'Version="' + req.body.version + '"\n')
+            mod = mod.replace(/Author\s*=\s*.*\n/i, 'Author="' + req.body.author + '"\n')
+            fs.writeFile(fileName, mod, err => {
+                if (err) {
+                    res.json({error: err})
+                } else {
+                    res.json(readModFile(req.params.mod))
+                }
+            })
+        }
     }
 }

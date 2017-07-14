@@ -33,7 +33,6 @@ class App extends Component {
             .catch((e) => {
                 throw new Error('fetch failed: ' + e)
             })
-
     }
 
     handleSubmit(event) {
@@ -62,6 +61,16 @@ class App extends Component {
         event.preventDefault()
     }
 
+    rowChanged(value) {
+        this.state.mods.some((row, index, mods) => {
+            if (row.id === value.id) {
+                mods[index] = value
+                this.setState({mods})
+                return true
+            }
+        }, this)
+    }
+
     render() {
         return (
             <div className="App">
@@ -71,7 +80,7 @@ class App extends Component {
                 </div>
                 <ul className="App-intro">
                 {this.state.mods.length
-                    ? this.state.mods.map((row) => <Row key={row.id} data={row} />)
+                    ? this.state.mods.map((row) => <Row key={row.id} data={row} rowChanged={v => this.rowChanged(v)}/>)
                     : 'Keine Mods gefunden'
                 }
                 </ul>

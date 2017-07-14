@@ -20,25 +20,24 @@ exports.preparseFile = (text) => {
 let tabcounter = 0
 let toWrite = ""
 
-exports.writeToFile = (lines, file) => {
+exports.writeToFile = (lines, file, overwrite = true) => {
     tabcounter = 0
     toWrite = ""
+    console.log(lines)
     lines.forEach((line) => {
         //add new line
-        line += line.splice(-1) == "\n" ? "" : "\n"
+        line += line.substr(-1) == "\n" ? "" : "\n"
         //add tabs
-        line = "\t" * tabcounter + line
+        for(let i = 0; i < tabcounter; i++) line = "\t" + line
 
         toWrite += line
+        console.log("---" + line)
 
-        tabcounter += line.search(/[\[\{]]/)
-        tabcounter -= line.search(/[\]\}]/)
+        tabcounter += line.search(/[\[\{]]/) + 1
+        tabcounter -= line.search(/[\]\}]/) + 1
     })
-
-    fs.writeFileSync(file, toWrite, err => {
-        if(err) return {error: err}
-        else return {}
-    })
+    console.log(toWrite)
+    fs.writeFileSync(file, toWrite)
 }
 
 let data = {}

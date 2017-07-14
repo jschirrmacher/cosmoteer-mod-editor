@@ -19,6 +19,8 @@ function readModFile(modId) {
     }
 }
 
+let mod
+
 module.exports = {
     listMods: (req, res) => {
         glob('mods/*/mod.txt', (err, files) => {
@@ -75,12 +77,37 @@ module.exports = {
     uploadPicture: (req,res) => {
         if(req.busboy){
             req.busboy.on("file", (fieldName, fileStream, fileName) =>{
-                let newPath = path.join(__dirname, "mods", req.params.mod, fileName)
+                //Save picture
+                const modName = req.params.mod
+                let newPath = path.join(__dirname, "mods", modName, fileName)
                 fileStream.pipe(fs.createWriteStream(newPath))
-                res.json("Sucess")
+                //Change mod.txt
+                const modTXT = path.join(__dirname, "mods", modName, "/mod.txt")
+                let shouldAdd = true
+                let rawmod = fs.readFileSync(modTXT).toString()
+                mod = parser.preparseFile(rawmod)
+                let modText = []
+                mod.forEach(line => {
+                    if(line.search(/Logo\s*=\s*.*/)>= 0) shouldAdd = false
+                    line = line.replace(/Logo\s*=\s*.*/i, 'Logo="' + fileName + '"\n')
+                    modText.push(line)
+                })
+                //Add new line after author with the logo
+                if(shouldAdd) {
+                    mod.forEach(line => {
+                        if(line.substr(0, 2) == "//") return
+                        if(line.search(/Author\s*=/) >= 0) modText.push('Logo = ' + fileName)
+                    })
+                }
+                //Now write to file
+                let ret = parser.writeToFile(modText, modTXT)
+                //Send back new logo path
+                console.log("sent!")
+                res.json("mods/" + modName + "/media/" + fileName)
             })
-            return req.pipe(req.busboy)
+            req.pipe(req.busboy)
         }
+        console.log("fin")
     },
 
     updateMod: (req, res) => {

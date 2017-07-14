@@ -11,14 +11,15 @@ tokeniser.rule("objectStart", /^[a-zA-Z]+\s*\{/)
 tokeniser.rule("bracket", /^[\[\]\{\}]/)
 tokeniser.rule("string", /^[^\r\n\[\]\{\}]+/)
 
-function preparseFile(text){
+exports.preparseFile = (text) => {
+    tokeniser.tokens = []
     return tokeniser.tokenize(text).map(element => element.trim()).filter(element => !element.match(/^$/))
 }
 
 let tabcounter = 0
 let toWrite = ""
 
-function writeToFile(lines, file){
+exports.writeToFile = (lines, file) => {
     tabcounter = 0
     toWrite = ""
     lines.forEach((line) => {
@@ -44,8 +45,8 @@ let stack = [data]
 let active = data
 let toAdd = undefined
 
-function readFile(fileName){
-    const lines = preparseFile(fs.readFileSync(fileName).toString())
+exports.readFile = (fileName) =>{
+    const lines = this.preparseFile(fs.readFileSync(fileName).toString())
     data = {randomData: []}
     stack = [data]
     active = data
@@ -113,7 +114,3 @@ function readFile(fileName){
     })
     return data;
 }
-
-export default readFile
-export default preparseFile
-export default writeToFile

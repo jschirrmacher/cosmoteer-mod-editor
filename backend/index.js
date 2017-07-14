@@ -8,6 +8,7 @@
 const express = require('express')
 const modHandler = require('./modHandler')
 const bodyParser = require("body-parser")
+const busboy = require("connect-busboy")
 
 const app = express()
 
@@ -16,6 +17,7 @@ app.use((req, res, next) => {
     next()
 })
 
+app.use(busboy())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:false}))
 
@@ -28,6 +30,8 @@ app.use((req, res, next) => {
 })
 
 app.post("/mods", modHandler.createMod)
+app.post("/mods/upload/picture/:mod", modHandler.uploadPicture)
+
 app.put('/mods/:mod', modHandler.updateMod)
 
 app.get('/mods', modHandler.listMods)

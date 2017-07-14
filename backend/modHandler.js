@@ -70,6 +70,17 @@ module.exports = {
         res.json(newMod)
     },
 
+    uploadPicture: (req,res) => {
+        if(req.busboy){
+            req.busboy.on("file", (fieldName, fileStream, fileName, encoding, mimeType) =>{
+                let newPath = path.join(__dirname, "mods", req.params.mod, fileName)
+                fileStream.pipe(fs.createWriteStream(newPath))
+                res.json("Sucess")
+            })
+            return req.pipe(req.busboy)
+        }
+    },
+
     updateMod: (req, res) => {
         let fileName = path.join(__dirname, "mods", req.params.mod, '/mod.txt')
         if (!fs.existsSync(fileName)) {

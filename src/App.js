@@ -6,7 +6,8 @@ class App extends Component {
 
     state = {
         mods: [],
-        newMod: {}
+        newMod: {},
+        newModData: {hasError : false, message: ""}
     }
 
     handleInputChange(event) {
@@ -45,18 +46,28 @@ class App extends Component {
                 if (!response.error) {
                     this.setState((state) => {
                         state.mods.push(response)
-                        state.sort((a, b) => {
+                        state.mods.sort((a, b) => {
                             let textA = a.title.toUpperCase();
                             let textB = b.title.toUpperCase();
                             return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
                         })
+                        state.newModData.hasError = false
                         return state
                     })
                 }
-                else alert(response.error)
+                else{
+                    this.setState((state) => {
+                        state.newModData.hasError = true
+                        state.newModData.message = response.error
+                    })
+                }
             })
         } else{
-            alert("Please fill out all fields")
+            this.setState((state) => {
+                state.newModData.hasError = true
+                state.newModData.message = "Please fill in all fields!"
+                return state
+            })
         }
         event.preventDefault()
     }
@@ -106,7 +117,7 @@ class App extends Component {
                         </div>
                         <input className="newModSubmit" type="submit" value="Create Mod"/>
                     </form>
-                    <p id="newModError">Error</p>
+                    {this.state.newModData.hasError ? <p id="newModError">{this.state.newModData.message}</p> : ""}
                 </div>
             </div>
 

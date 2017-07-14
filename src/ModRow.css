@@ -1,29 +1,38 @@
 li {
-  list-style: none;
-  border: 1px solid #ddd;
-  padding: 10px 10px 10px 100px;
-  min-height: 80px;
-  margin: 0 10px; }
-  li img {
-    position: absolute;
-    left: 20px;
-    width: 80px;
-    height: 80px; }
-  li input[name='title'] {
-    font-size: 120%; }
-  li .description {
-    display: block;
-    font-size: 90%;
-    clear: both;
-    white-space: pre;
-    line-height: 1;
-    margin-top: 1em; }
-    li .description green {
-      color: green; }
-  li input {
-    display: block;
-    width: 100%;
-    font-size: 100%;
-    border: none; }
+    list-style: none;
+    border: 1px solid #ddd;
+    padding: 10px 10px 10px 100px;
+    min-height: 80px;
+    margin: 0 10px;
+}
+li img {
+  position: absolute;
+  left: 20px;
+  width: 80px;
+  height: 80px;
+}
+li input[name='title'] {
+font-size: 120%;
+}
+li .description {
+display: block;
+font-size: 90%;
+clear: both;
+white-space: pre;
+line-height: 1;
+margin-top: 1em;
+}
+li .description green {
+  color: green;
+}
+li input {
+display: block;
+width: 100%;
+font-size: 100%;
+border: none;
+}
+#file-input{
+    display:none;
+}
 
 /*# sourceMappingURL=ModRow.css.map */

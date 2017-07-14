@@ -52,3 +52,10 @@
     padding: 8px;
     border-radius: 6px;
 }
+
+#newModError{
+    color: darkred;
+    position: absolute;
+    left: 35%;
+    margin-top: -2%;
+}

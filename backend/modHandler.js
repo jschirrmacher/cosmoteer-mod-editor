@@ -92,6 +92,7 @@ module.exports = {
             mod = mod.replace(/Name\s*=\s*.*\n/i, 'Name="' + req.body.title + '"\n')
             mod = mod.replace(/Version\s*=\s*.*\n/i, 'Version="' + req.body.version + '"\n')
             mod = mod.replace(/Author\s*=\s*.*\n/i, 'Author="' + req.body.author + '"\n')
+            mod = mod.replace(/Description\s*=\s*.*\n/i, 'Description="' + req.body.description + '"\n')
             fs.writeFile(fileName, mod, err => {
                 if (err) {
                     res.json({error: err})

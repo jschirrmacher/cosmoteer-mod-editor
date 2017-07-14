@@ -2,9 +2,21 @@ import React, { Component } from 'react'
 import './ModRow.css'
 
 class ModRow extends Component {
+    state = {
+        selected: false
+    }
+
+    select() {
+        this.setState({selected: true})
+    }
+
+    deselect() {
+        this.setState({selected: false})
+    }
+
     changed(e) {
         let value = this.props.data
-        value[e.target.name] = e.target.value
+        value[e.target.getAttribute('name')] = e.target.value || e.target.innerHTML
         this.props.rowChanged(value)
 
         fetch('/mods/' + this.props.data.id, {
@@ -41,6 +53,14 @@ class ModRow extends Component {
             return {__html: data.description}
         }
 
+        let description = this.state.selected ?
+            <textarea className="description" name="description"
+                onChange={e => this.changed(e)}
+                onBlur={() => this.deselect()}
+                value={this.props.data.description} /> :
+            <span className="description" onClick={() => this.select()}
+                dangerouslySetInnerHTML={getDescription(this.props.data)} />
+
         return (
             <li>
                 <form>
@@ -54,8 +74,7 @@ class ModRow extends Component {
                 <input type="text" name="title" value={this.props.data.title} onChange={e => this.changed(e)} />
                 <input type="text" name="author" value={this.props.data.author} onChange={e => this.changed(e)} />
                 <input type="text" name="version" value={this.props.data.version} onChange={e => this.changed(e)} />
-                <span className="description" contentEditable onInput={e => this.changed(e)}
-                    dangerouslySetInnerHTML={getDescription(this.props.data)}></span>
+                {description}
             </li>
         )
     }

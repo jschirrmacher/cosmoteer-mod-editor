@@ -59,10 +59,9 @@ class ModRow extends Component {
 
         let description = this.state.selected ?
             <TextareaAutosize className="description" name="description"
-                onChange={e => {this.changed(e)}}
+                onChange={e => this.changed(e)}
                 onBlur={() => this.deselect()}
-                value={this.props.data.description}
-                onResize={(e) => {}}/> :
+                value={this.props.data.description} /> :
             <span className="description" onClick={() => this.select()}
                 dangerouslySetInnerHTML={getDescription(this.props.data)} />
 

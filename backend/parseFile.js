@@ -3,17 +3,18 @@
  */
 "use strict";
 const fs = require("fs")
-const tokeniser = require("node-tokenizer")
+const tokeniser = require("tokenizer-array")
 
-tokeniser.rule("whitespace", /^[\r\n\t ]+/)
-tokeniser.rule("arrayStart", /^[a-zA-Z]+\s*\[/)
-tokeniser.rule("objectStart", /^[a-zA-Z]+\s*\{/)
-tokeniser.rule("bracket", /^[\[\]\{\}]/)
-tokeniser.rule("string", /^[^\r\n\[\]\{\}]+/)
+const rules = [
+    { type: "whitespace", regex: /^[\r\n\t ]+$/ },
+    { type: "arrayStart", regex: /^[a-zA-Z]+\s*\[$/ },
+    { type: "objectStart", regex: /^[a-zA-Z]+\s*\{$/ },
+    { type: "bracket", regex: /^[\[\]\{\}]$/ },
+    { type: "string", regex: /^[^\r\n\[\]\{\}]+$/ }
+]
 
 exports.preparseFile = (text) => {
-    tokeniser.tokens = []
-    return tokeniser.tokenize(text).map(element => element.trim()).filter(element => !element.match(/^$/))
+    return tokeniser(text, rules).map(element => element.source.trim()).filter(element => !element.match(/^$/))
 }
 
 let tabcounter = 0

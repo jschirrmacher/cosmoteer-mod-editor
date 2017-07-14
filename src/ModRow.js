@@ -42,7 +42,9 @@ class ModRow extends Component {
             if (response.error) {
                 throw response.error
             }
-            alert(response)
+            let value = this.props.data
+            value.logo = response
+            this.props.rowChanged(value)
         })
         .catch(error => alert(error))
 
@@ -65,10 +67,10 @@ class ModRow extends Component {
             <li>
                 <form>
                     <div className="image-upload">
-                        <label htmlFor="file-input">
+                        <label htmlFor={this.props.data.id + "file-input"}>
                             <img src={this.props.data.logo} alt="Mod Logo"/>
                         </label>
-                        <input id="file-input" type="file" onChange={e => this.pictureChanged(e.target)} name="picture"/>
+                        <input className="file-input" id={this.props.data.id + "file-input"} type="file" onChange={e => this.pictureChanged(e.target)} name="picture"/>
                     </div>
                 </form>
                 <input type="text" name="title" value={this.props.data.title} onChange={e => this.changed(e)} />

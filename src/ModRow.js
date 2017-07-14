@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import './ModRow.css'
+import TextareaAutosize from 'react-autosize-textarea'
 
 class ModRow extends Component {
     state = {
@@ -50,16 +51,18 @@ class ModRow extends Component {
 
     }
 
+
     render() {
         function getDescription(data) {
             return {__html: data.description}
         }
 
         let description = this.state.selected ?
-            <textarea className="description" name="description"
-                onChange={e => this.changed(e)}
+            <TextareaAutosize className="description" name="description"
+                onChange={e => {this.changed(e)}}
                 onBlur={() => this.deselect()}
-                value={this.props.data.description} /> :
+                value={this.props.data.description}
+                onResize={(e) => {}}/> :
             <span className="description" onClick={() => this.select()}
                 dangerouslySetInnerHTML={getDescription(this.props.data)} />
 

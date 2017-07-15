@@ -5,6 +5,6 @@ module.exports = [
     {type: "arrayEnd", regex: /^\s*\]/},
     {type: "objectStart", regex: /^\s*(\w*)\s*\{/},
     {type: "objectEnd", regex: /^\s*\}/},
-    {type: "line", regex: /^.+$/},
+    {type: "line", regex: /^[^\]\}]+/},
     {type: "emptyLine", regex: /^\n*/}
 ]

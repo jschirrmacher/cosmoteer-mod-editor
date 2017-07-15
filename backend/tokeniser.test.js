@@ -56,5 +56,16 @@ describe('Tokeniser', () => {
 
     it('should recognise objects in an array')
     it('should recognise arrays in an array')
-    it('should recognise literals in an array')
+
+    it('should recognise literals in an array', done => {
+        let result = tokeniser('abc [1, 2, 3]', rules)
+        result.should.be.an.array
+        result.length.should.equal(3)
+        result[0].type.should.equal('arrayStart')
+        result[0].matches[0].should.equal('abc [')
+        result[0].matches[1].should.equal('abc')
+        result[2].type.should.equal('arrayEnd')
+        result[2].matches[0].trim().should.equal(']')
+        done()
+    })
 })

@@ -99,22 +99,26 @@ exports.fromObjectToText = (mod) => {
     let text = []
     if(mod.constructor === Array) addArray(mod)
     else addObject(mod)
-    function addArray(array){
+    function addArray(array, name = ""){
+        text.push(name + "[")
         array.forEach(value => {
-            if(prop.constructor === Array) addArray(object[prop])
-            else if(typeof object[prop] === "object") addObject(object[prop])
+            if(value.constructor === Array) addArray(value)
+            else if(typeof value === "object") addObject(value)
             else text.push(value.toString())
         })
+        text.push("]")
     }
-    function addObject(object){
+    function addObject(object, name = ""){
+        text.push(name + "{")
         for(let prop in object){
             if(object.hasOwnProperty(prop)){
                 if(prop === "nonamed") text.append(object[prop])
-                else if(prop.constructor === Array) addArray(object[prop])
-                else if(typeof object[prop] === "object") addObject(object[prop])
+                else if(object[prop].constructor === Array) addArray(object[prop], prop)
+                else if(typeof object[prop] === "object") addObject(object[prop], prop)
                 else text.push(prop + ' = "' + object[prop] + '"')
             }
         }
+        text.push("}")
     }
     return text
 }

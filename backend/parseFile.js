@@ -64,7 +64,7 @@ function createArray(tokenArray) {
 }
 
 function cleanse(string) {
-    return string.trim().replace(/^'|'$/g, '')
+    return string.trim().replace(/^"|"$/g, '')
 }
 
 exports.writeToFile = (lines, file) => {

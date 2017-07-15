@@ -94,3 +94,27 @@ exports.writeToFile = (lines, file) => {
     })
     fs.writeFileSync(file, toWrite)
 }
+
+exports.fromObjectToText = (mod) => {
+    let text = []
+    if(mod.constructor === Array) addArray(mod)
+    else addObject(mod)
+    function addArray(array){
+        array.forEach(value => {
+            if(prop.constructor === Array) addArray(object[prop])
+            else if(typeof object[prop] === "object") addObject(object[prop])
+            else text.push(value.toString())
+        })
+    }
+    function addObject(object){
+        for(let prop in object){
+            if(object.hasOwnProperty(prop)){
+                if(prop === "nonamed") text.append(object[prop])
+                else if(prop.constructor === Array) addArray(object[prop])
+                else if(typeof object[prop] === "object") addObject(object[prop])
+                else text.push(prop + ' = "' + object[prop] + '"')
+            }
+        }
+    }
+    return text
+}

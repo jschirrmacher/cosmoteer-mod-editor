@@ -35,5 +35,11 @@ describe('File Parser', () => {
         result.should.deepEqual({description: 'A small test is very important!'})
         done()
     })
+
+    it('Mod to Text Simple Test', done =>{
+        let result = parseFile.fromObjectToText({name: "Bob", version: "1.0.0", author: "Someone", description:"A simple test mod"})
+        result.should.deepEqual(['name = "Bob"', 'version = "1.0.0"', 'author = "Someone"', 'description = "A simple test mod"'])
+        done()
+    })
 })
 

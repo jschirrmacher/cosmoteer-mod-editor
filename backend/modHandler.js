@@ -24,11 +24,11 @@ function readModFile(modId) {
     if(!modData) return false
     return {
         id: modData.id,
-        name: modData.Name,
-        author: modData.Author,
-        version: modData.Version,
-        description: stripJs(modData.Description),
-        logo: '/mods/' + modId + '/media/' + modData.Logo
+        name: modData.name,
+        author: modData.author,
+        version: modData.version,
+        description: stripJs(modData.description),
+        logo: '/mods/' + modId + '/media/' + modData.logo
     }
 }
 
@@ -108,24 +108,15 @@ module.exports = {
     },
 
     updateMod: (req, res) => {
-        let fileName = path.join(__dirname, "mods", req.params.mod, '/mod.txt')
-        if (!fs.existsSync(fileName)) {
-            res.json({error: 'Mod does not exist'})
-        } else {
-            let mod = fs.readFileSync(fileName).toString()
-            console.log(mod)
-            mod = mod.replace(/Name\s*=\s*.*\n/i, 'Name="' + req.body.name + '"\n')
-            mod = mod.replace(/Version\s*=\s*.*\n/i, 'Version="' + req.body.version + '"\n')
-            mod = mod.replace(/Author\s*=\s*.*\n/i, 'Author="' + req.body.author + '"\n')
-            mod = mod.replace(/Description\s*=\s*.*\n/i, 'Description="' + req.body.description + '"\n')
-            console.log(mod)
-            fs.writeFile(fileName, mod, err => {
-                if (err) {
-                    res.json({error: err})
-                } else {
-                    res.json(readModFile(req.params.mod))
-                }
-            })
+        let toUpdate
+        if(!(toUpdate = this.readModFile(req.params.mod))){
+            toUpdate.name = req.body-name
+            toUpdate.version = req.body.version
+            toUpdate.author = req.body.author
+            toUpdate.description = req.body.description
+            res.json(readModFile(req.params.mod))
+            return
         }
+        res.json({error: "Mod has not been found!"})
     }
 }

@@ -17,14 +17,20 @@ exports.newParser = (fileName) => {
 
 exports.readNewFile = (fileName) => {
     let tokenArray = this.newParser(fileName)
-    if (tokenArray[0].type === 'arrayStart') {
-        tokenArray.shift()
-        return createArray(tokenArray)
-    } else if (tokenArray[0].type === 'objectStart') {
-        tokenArray.shift()
-        return createObj(tokenArray)
-    } else {
-        return createObj(tokenArray)
+    try{
+        if (tokenArray[0].type === 'arrayStart') {
+            tokenArray.shift()
+            return createArray(tokenArray)
+        } else if (tokenArray[0].type === 'objectStart') {
+            tokenArray.shift()
+            return createObj(tokenArray)
+        } else {
+            return createObj(tokenArray)
+        }
+    } catch (e) {
+        console.log("Error --------------------") //eslint-disable-line no-console
+        console.log("Error in file: " + fileName) //eslint-disable-line no-console
+        throw e
     }
 }
 

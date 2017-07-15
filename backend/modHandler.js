@@ -109,6 +109,7 @@ module.exports = {
                     }
                     //Send back new logo path
                     res.json("mods/" + modName + "/media/" + fileName)
+                    return
                 })
 
             })
@@ -125,6 +126,7 @@ module.exports = {
             toUpdate.author = req.body.author
             toUpdate.description = req.body.description
             res.json(readModFile(req.params.mod))
+            saveModFile(toUpdate)
             return
         }
         res.json({error: "Mod has not been found!"})

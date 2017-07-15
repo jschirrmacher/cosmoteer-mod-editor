@@ -38,14 +38,13 @@ function readModFile(modId) {
 
 function updateMod(newVersion){
     let updatedMod
-    mods.forEach(mod => {
+    mods = mods.map(mod => {
         if(mod.id === newVersion.id){
             mod = newVersion
             updatedMod = mod
-            return
         }
+        return mod
     })
-    console.log("Updated mod: " + updatedMod.id)
     return updatedMod
 }
 
@@ -56,7 +55,6 @@ function saveModFile(mod) {
             if(_mod.id === mod) mod = _mod
         })
     }
-    console.log("Saving: " + mod.id)
     parser.writeToFile(parser.fromObjectToText(mod), "./mods/" + mod.id + "/mod.txt")
     return updateMod(mod)
 }
@@ -75,7 +73,6 @@ module.exports = {
     },
     getMediaFile: (req, res) => {
         let file = path.join(__dirname, 'mods', req.params.mod, req.params.file)
-        console.log(file)
         if (fs.existsSync(file)) {
             res.sendFile(file)
         } else {
@@ -148,12 +145,10 @@ module.exports = {
     updateMod: (req, res) => {
         let toUpdate
         if(toUpdate = readModFile(req.params.mod)){
-            console.log(toUpdate)
             toUpdate.name = req.body.name
             toUpdate.version = req.body.version
             toUpdate.author = req.body.author
             toUpdate.description = req.body.description
-            console.log(toUpdate)
             res.json(saveModFile(toUpdate))
         }else{
             res.json({error: "Mod has not been found!"})

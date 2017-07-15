@@ -1,17 +1,18 @@
-import React, { Component } from 'react'
+import { Component } from 'react'
 import './App.css'
-import Row from './ModRow'
 
 class App extends Component {
-
-    state = {
-        mods: [],
-        newMod: {},
-        newModData: {hasError : false, message: ""}
+    constructor(props) {
+        super(props)
+        this.state = {
+            mods: [],
+            newMod: {},
+            newModData: {hasError : false, message: ''}
+        }
     }
 
     handleInputChange(event) {
-        const target = event.target;
+        const target = event.target
         this.setState((state) => {
             state.newMod[target.name] = target.value
             return state
@@ -19,7 +20,7 @@ class App extends Component {
     }
 
     static titleSort(a, b) {
-        return a.title.localeCompare(b.title)
+        return a.name.localeCompare(b.name)
     }
 
     componentWillMount() {
@@ -36,7 +37,7 @@ class App extends Component {
         let data = this.state.newMod
         if (data.id !== undefined && data.name !== undefined && data.author !== undefined && data.version !== undefined) {
             let form = event.target
-            fetch("/mods", {
+            fetch('/mods', {
                 method: 'POST',
                 body: JSON.stringify(this.state.newMod),
                 headers: {'Content-Type': 'application/json'}
@@ -58,7 +59,7 @@ class App extends Component {
                     this.setState({newModData: {hasError: true, message: e}})
                 })
         } else{
-            this.setState({newModData: {hasError: true, message: "Please fill in all fields!"}})
+            this.setState({newModData: {hasError: true, message: 'Please fill in all fields!'}})
         }
         event.preventDefault()
     }
@@ -85,7 +86,7 @@ class App extends Component {
                 <ul className="App-intro">
                 {this.state.mods.length
                     ? this.state.mods.map((row) => <Row key={row.id} data={row} rowChanged={v => this.rowChanged(v)}/>)
-                    : 'Keine Mods gefunden'
+                    : 'No Mods found'
                 }
                 </ul>
                 <div className="addMod">
@@ -108,7 +109,7 @@ class App extends Component {
                         </div>
                         <input className="newModSubmit" type="submit" value="Create Mod"/>
                     </form>
-                    {this.state.newModData.hasError ? <p id="newModError">{this.state.newModData.message}</p> : ""}
+                    {this.state.newModData.hasError ? <p id="newModError">{this.state.newModData.message}</p> : ''}
                 </div>
             </div>
 
@@ -116,4 +117,4 @@ class App extends Component {
     }
 }
 
-export default App;
+export default App

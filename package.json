@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "eslint": "^4.2.0",
     "glob": "^7.1.2",
     "react": "^15.6.1",
     "react-autosize-textarea": "^0.4.7",
     "react-dom": "^15.6.1"
   },
   "devDependencies": {
+    "eslint": "^4.2.0",
     "eslint-plugin-flowtype": "^2.35.0",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-jsx-a11y": "^6",

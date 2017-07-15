@@ -1,10 +1,11 @@
-import React, { Component } from 'react'
+import { Component } from 'react'
 import './ModRow.css'
 import TextareaAutosize from 'react-autosize-textarea'
 
 class ModRow extends Component {
-    state = {
-        selected: false
+    constructor(props) {
+        super(props)
+        this.state = {selected: false}
     }
 
     select() {
@@ -35,7 +36,7 @@ class ModRow extends Component {
     }
 
     pictureChanged(input) {
-        fetch("/mods/upload/picture/" + this.props.data.id,{  method: 'POST',
+        fetch('/mods/upload/picture/' + this.props.data.id,{  method: 'POST',
             body: new FormData(input.parentNode.parentNode)
         })
         .then(res => res.json())
@@ -69,13 +70,13 @@ class ModRow extends Component {
             <li>
                 <form>
                     <div className="image-upload">
-                        <label htmlFor={this.props.data.id + "file-input"}>
+                        <label htmlFor={this.props.data.id + 'file-input'}>
                             <img src={this.props.data.logo} alt="Mod Logo"/>
                         </label>
-                        <input className="file-input" id={this.props.data.id + "file-input"} type="file" onChange={e => this.pictureChanged(e.target)} name="picture"/>
+                        <input className="file-input" id={this.props.data.id + 'file-input'} type="file" onChange={e => this.pictureChanged(e.target)} name="picture"/>
                     </div>
                 </form>
-                <input type="text" name="title" value={this.props.data.title} onChange={e => this.changed(e)} />
+                <input type="text" name="name" value={this.props.data.name} onChange={e => this.changed(e)} />
                 <input type="text" name="author" value={this.props.data.author} onChange={e => this.changed(e)} />
                 <input type="text" name="version" value={this.props.data.version} onChange={e => this.changed(e)} />
                 {description}

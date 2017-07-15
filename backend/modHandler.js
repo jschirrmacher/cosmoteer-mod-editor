@@ -11,7 +11,7 @@ function readModFile(modId) {
     let data = parser.readFile(fileName)
     return {
         id: modId,
-        title: data.Name,
+        name: data.Name,
         author: data.Author,
         version: data.Version,
         description: stripJs(data.Description),
@@ -116,7 +116,7 @@ module.exports = {
             res.json({error: 'Mod does not exist'})
         } else {
             let mod = fs.readFileSync(fileName).toString()
-            mod = mod.replace(/Name\s*=\s*.*\n/i, 'Name="' + req.body.title + '"\n')
+            mod = mod.replace(/Name\s*=\s*.*\n/i, 'Name="' + req.body.name + '"\n')
             mod = mod.replace(/Version\s*=\s*.*\n/i, 'Version="' + req.body.version + '"\n')
             mod = mod.replace(/Author\s*=\s*.*\n/i, 'Author="' + req.body.author + '"\n')
             mod = mod.replace(/Description\s*=\s*.*\n/i, 'Description="' + req.body.description + '"\n')

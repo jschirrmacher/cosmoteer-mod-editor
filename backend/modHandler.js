@@ -32,30 +32,31 @@ function readModFile(modId) {
         author: modData.author,
         version: modData.version,
         description: stripJs(modData.description),
-        logo: '/mods/' + modId + '/media/' + modData.logo
+        logo: modData.logo
     }
 }
 
 function updateMod(newVersion){
+    let updatedMod
     mods.forEach(mod => {
         if(mod.id === newVersion.id){
             mod = newVersion
-            return mod
+            updatedMod = mod
+            return
         }
-        console.log("Looking at mod "+ mod.id + " but looking for " + newVersion.id)
     })
-    console.log("No mod found! Searched for: " + newVersion.id)
+    console.log("Updated mod: " + updatedMod.id)
+    return updatedMod
 }
 
 function saveModFile(mod) {
     if(typeof mod !== "object"){
-        console.log("Searching for mod with id: " + mod)
         //Act as if mod id
         mods.forEach(_mod => {
             if(_mod.id === mod) mod = _mod
         })
     }
-    console.log("Saving mod: " + mod.id)
+    console.log("Saving: " + mod.id)
     parser.writeToFile(parser.fromObjectToText(mod), "./mods/" + mod.id + "/mod.txt")
     return updateMod(mod)
 }
@@ -64,7 +65,11 @@ module.exports = {
     listMods: (req, res) => {
         glob('mods/*/mod.txt', (err, files) => {
             res.json({
-                mods: files.map(file => readModFile(file.replace(/mods\/(.*?)\/mod.txt/, '$1')))
+                mods: files.map(file => {
+                    let mod = readModFile(file.replace(/mods\/(.*?)\/mod.txt/, '$1'))
+                    mod.logo = "/mods/" + mod.id + "/media/" + mod.logo
+                    return mod
+                })
             })
         })
     },
@@ -143,10 +148,12 @@ module.exports = {
     updateMod: (req, res) => {
         let toUpdate
         if(toUpdate = readModFile(req.params.mod)){
+            console.log(toUpdate)
             toUpdate.name = req.body.name
             toUpdate.version = req.body.version
             toUpdate.author = req.body.author
             toUpdate.description = req.body.description
+            console.log(toUpdate)
             res.json(saveModFile(toUpdate))
         }else{
             res.json({error: "Mod has not been found!"})

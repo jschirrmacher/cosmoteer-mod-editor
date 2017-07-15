@@ -1,0 +1,6 @@
+//to ignore
+Name = Test
+
+Author = "Me"
+
+Version = "1.0.0"

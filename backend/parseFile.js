@@ -3,60 +3,109 @@
  */
 "use strict";
 const fs = require("fs")
-const tokeniser = require("tokenizer-array")
+const tokeniser = require("./tokeniser")
 
 const rules = [
-    { type: "whitespace", regex: /^[\r\n\t ]+/ },
-    { type: "arrayStart", regex: /^[a-zA-Z]+\s*\[/ },
-    { type: "objectStart", regex: /^[a-zA-Z]+\s*\{/ },
-    { type: "bracket", regex: /^[\[\]\{\}]/ },
-    { type: "string", regex: /^[^\r\n\[\]\{\}]+/ }
+    {type: "whitespace", regex: /^[\r\n\t ]+$/},
+    {type: "arrayStart", regex: /^[a-zA-Z]+\s*\[$/},
+    {type: "objectStart", regex: /^[a-zA-Z]+\s*\{$/},
+    {type: "bracket", regex: /^[\[\]\{\}]$/},
+    {type: "string", regex: /^[^\r\n\[\]\{\}]+$/}
 ]
 
-exports.preparseFile = (text) => {
-    return tokeniser(text, rules).map(element => element.source.trim()).filter(element => !element.match(/^$/))
+const newRules = require("./rules")
+
+exports.preparseFile = (text, activeRules) => {
+    let rawLines
+    rawLines = tokeniser(text, activeRules).map(element => element.source.trim()).filter(element => !element.match(/^$/))
 }
 
-let tabcounter = 0
-let toWrite = ""
+exports.newParser = (fileName) => {
+    return tokeniser(fs.readFileSync(fileName).toString().replace(/\r/g, ""), newRules)
+}
 
-exports.writeToFile = (lines, file) => {
+exports.readNewFile = (fileName) => {
+    let tokenArray = this.newParser(fileName)
+    if(tokenArray[0].type === "arrayStart"){tokenArray.shift(); return createArray(tokenArray)}
+    else if(tokenArray[0].type === "objectStart") {tokenArray.shift(); return createObj(tokenArray)}
+    else return createObj(tokenArray)
+}
+
+function createObj(tokenArray){
+    let token
+    let obj
+    obj = {}
+    while(token = tokenArray.shift()){
+        if(token.type === "definition") obj[token.matches[1]] = cleanse(token.matches[2])
+        else if(token.type === "arrayStart") obj[token.matches[1]] = createArray(tokenArray)
+        else if(token.type === "arrayEnd") throw "Can not end array in object"
+        else if(token.type === "objectStart" ) obj[token.matches[1]] = (createObj(tokenArray))
+        else if(token.type === "objectEnd") break
+        else if(token.type === "line") throw "Can not add unnamed value(line) to object"
+    }
+    return obj
+}
+
+function createArray(tokenArray){
+    let token
+    let obj
+    obj = []
+    while(token = tokenArray.shift()){
+        if(token.type === "definition") throw "Definitions can not be added directly to array"
+        else if(token.type === "arrayStart" ) obj.push(createArray(tokenArray))
+        else if(token.type === "arrayEnd") return obj
+        else if(token.type === "objectStart") obj.push(createObj(tokenArray))
+        else if(token.type === "objectEnd") throw tokenArray
+        else if(token.type === "line") obj.push(cleanse(token.matches[0]))
+    }
+    return obj
+}
+
+function cleanse(string){
+    return string.trim().replace(/^"|"$/g, "")
+}
+
+exports.writeToFile = (lines, file, overwrite = true) => {
+    let tabcounter
     tabcounter = 0
+    let toWrite
     toWrite = ""
+    console.log(lines)
     lines.forEach((line) => {
         //add new line
-        line += line.splice(-1) == "\n" ? "" : "\n"
+        line += line.substr(-1) == "\n" ? "" : "\n"
         //add tabs
-        line = "\t" * tabcounter + line
+        for (let i = 0; i < tabcounter; i++) line = "\t" + line
 
         toWrite += line
+        console.log("---" + line)
 
-        tabcounter += line.search(/[\[\{]]/)
-        tabcounter -= line.search(/[\]\}]/)
+        tabcounter += line.search(/[\[\{]]/) + 1
+        tabcounter -= line.search(/[\]\}]/) + 1
     })
-
-    fs.writeFileSync(file, toWrite, err => {
-        if(err) return {error: err}
-        else return {}
-    })
+    console.log(toWrite)
+    fs.writeFileSync(file, toWrite)
 }
 
-let data = {}
-let stack = [data]
-let active = data
-let toAdd = undefined
-
-exports.readFile = (fileName) =>{
-    const lines = this.preparseFile(fs.readFileSync(fileName).toString())
+exports.readFile = (fileName) => {
+    let data
     data = {randomData: []}
+    let stack
     stack = [data]
+    let active
     active = data
+    let toAdd
     toAdd = undefined
+    let newVersion
+    newVersion = []
+    const lines = this.preparseFile(fs.readFileSync(fileName).toString(), rules)
+    newVersion = []
     lines.forEach(line => {
         //Test if comma
         if (line.substr(0, 2) === "//") return
 
         line = line.replace(/\\n/g, "\n")
+
         //Should add to last
         if (toAdd) {
             let cont = false
@@ -72,7 +121,7 @@ exports.readFile = (fileName) =>{
         }
         //Test if value declaration
         const splitLine = line.split("=")
-        if (splitLine.length === 2){
+        if (splitLine.length === 2) {
             let key = splitLine[0].trim()
             if (line.substr(-1) === "\\") {
                 splitLine[1] = splitLine[1].substr(0, splitLine[1].length - 1)
@@ -81,19 +130,19 @@ exports.readFile = (fileName) =>{
             active[key] = splitLine[1].trim().replace(/^"|"$/g, '')
         }
         //
-        else{
-            if(line.substr(-1) === "["){
+        else {
+            if (line.substr(-1) === "[") {
                 active[line.substr(0, line.length - 1).trim()] = []
                 stack.push(active[line.substr(0, line.length - 1).trim()])
                 active = stack[stack.length - 1]
-            } else if(line == "["){
+            } else if (line == "[") {
                 //todo: handle unammed Arrays
                 //todo: unnammed Arrays werden nicht in den Stack gepuscht, da sie nur skalars haben
                 throw "This has not been implemented! " + line
-            } else if(line === "]" || line === "}"){
+            } else if (line === "]" || line === "}") {
                 active = stack[stack.length - 2]
                 stack.pop()
-            } else if(line == "{") {
+            } else if (line == "{") {
                 if (Array.isArray(active)) {
                     active.push({})
                     stack.push(active[active.length - 1])
@@ -103,11 +152,11 @@ exports.readFile = (fileName) =>{
                     //todo: handle unnammed objects in obejcts (if that occurs)
                     throw "This has not been implemented!" + line
                 }
-            } else{
+            } else {
                 //todo: handle links + other data
-                if(Array.isArray(active)){
+                if (Array.isArray(active)) {
                     active.push(line)
-                } else{
+                } else {
                     active.randomData.push(line)
                 }
             }

@@ -12,8 +12,23 @@ describe('Tokeniser', () => {
         done()
     })
 
-    it('should recognise definitions')
-    it('should recognise definitions with continuation lines')
+    it('should recognise definitions', done => {
+        let result = tokeniser('Name = Test\nAuthor = "Bob Sherman"', rules)
+        result[0].type.should.equal("definition")
+        result[1].type.should.equal("definition")
+        result[0].matches[1].should.equal("Name")
+        result[0].matches[2].should.equal("Test")
+        result[1].matches[1].should.equal("Author")
+        result[1].matches[2].should.equal('"Bob Sherman"')
+        done()
+    })
+    it('should recognise definitions with continuation lines', done => {
+        let result = tokeniser('Description = "A small test is"\\n"very important!"', rules)
+        result[0].type.should.equal("definition")
+        result[0].matches[1].should.equal("Description")
+        result[0].matches[2].should.equal('"A small test is"\\n"very important!"')
+        done()
+    })
 
     it('should recognise arrays', done => {
         let result = tokeniser('abc [\n\tx = 1\n]', rules)

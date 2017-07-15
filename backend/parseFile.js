@@ -7,6 +7,14 @@ const tokeniser = require('./tokeniser')
 
 const newRules = require('./rules')
 
+function throwError(errorMessage, additionalData = []){
+    additionalData.forEach(data => {
+        console.log(data.toString())
+    })
+    throw errorMessage
+}
+
+
 exports.preparseFile = (text, activeRules) => {
     return tokeniser(text, activeRules).map(element => element.source.trim()).filter(element => !element.match(/^$/))
 }
@@ -38,18 +46,13 @@ function createObj(tokenArray) {
     let token
     let obj
     obj = {}
-    try {
-        while ((token = tokenArray.shift())) {
-            if (token.type === 'definition') obj[token.matches[1].toLowerCase()] = handleContinuation(token.matches[2])
-            else if (token.type === 'arrayStart') obj[token.matches[1].toLowerCase()] = createArray(tokenArray)
-            else if (token.type === 'arrayEnd') throw 'Can not end array in object'
-            else if (token.type === 'objectStart') obj[token.matches[1].toLowerCase()] = createObj(tokenArray)
-            else if (token.type === 'objectEnd') break
-            else if (token.type === 'line') throw 'Can not add unnamed value(line) to object'
-        }
-    } catch (e) {
-        console.log(token.matches) // eslint-disable-line no-console
-        throw e
+    while ((token = tokenArray.shift())) {
+        if (token.type === 'definition') obj[token.matches[1].toLowerCase()] = handleContinuation(token.matches[2])
+        else if (token.type === 'arrayStart') obj[token.matches[1].toLowerCase()] = createArray(tokenArray)
+        else if (token.type === 'arrayEnd') throwError('Can not end array in object', [tokeniser.matches])
+        else if (token.type === 'objectStart') obj[token.matches[1].toLowerCase()] = createObj(tokenArray)
+        else if (token.type === 'objectEnd') break
+        else if (token.type === 'line') throwError('Can not add unnamed value(line) to object', [tokeniser.matches])
     }
     return obj
 }
@@ -60,11 +63,11 @@ function createArray(tokenArray) {
     obj = []
     try {
         while ((token = tokenArray.shift())) {
-            if (token.type === 'definition') throw 'Definitions can not be added directly to array'
+            if (token.type === 'definition') throwError('Definitions can not be added directly to array', [tokeniser.matches])
             else if (token.type === 'arrayStart') obj.push(createArray(tokenArray))
             else if (token.type === 'arrayEnd') return obj
             else if (token.type === 'objectStart') obj.push(createObj(tokenArray))
-            else if (token.type === 'objectEnd') throw 'Cannot end object in array'
+            else if (token.type === 'objectEnd') throwError('Cannot end object in array', [tokeniser.matches])
             else if (token.type === 'line') obj.push(cleanse(token.matches[0]))
         }
     } catch (e) {

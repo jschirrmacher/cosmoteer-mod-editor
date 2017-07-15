@@ -15,13 +15,17 @@ function readModFile(modId) {
         if(mod.id == modId) modData = mod
     })
     if(!modData){
-        var fileName = path.join(__dirname, '/mods/', modId, '/mod.txt')
-        modData = parser.readNewFile(fileName)
-        //Add mod id
-        modData.id = modId
-        mods.push(modData)
-    }
-    if(!modData) return false
+        try{
+            let fileName = path.join(__dirname, '/mods/', modId, '/mod.txt')
+            modData = parser.readNewFile(fileName)
+            //Add mod id
+            modData.id = modId
+            console.log("New mod id: " + modId)
+            mods.push(modData)
+        } catch(e){
+            console.log("Did not find mod file: " + modId)
+            return false
+        }}
     return {
         id: modData.id,
         name: modData.name,
@@ -32,14 +36,28 @@ function readModFile(modId) {
     }
 }
 
+function updateMod(newVersion){
+    mods.forEach(mod => {
+        if(mod.id === newVersion.id){
+            mod = newVersion
+            return mod
+        }
+        console.log("Looking at mod "+ mod.id + " but looking for " + newVersion.id)
+    })
+    console.log("No mod found! Searched for: " + newVersion.id)
+}
+
 function saveModFile(mod) {
     if(typeof mod !== "object"){
+        console.log("Searching for mod with id: " + mod)
         //Act as if mod id
         mods.forEach(_mod => {
             if(_mod.id === mod) mod = _mod
         })
     }
-    parser.writeToFile(parser.fromObejctToText(mod), "./mods/" + mod.id + "/mod.txt")
+    console.log("Saving mod: " + mod.id)
+    parser.writeToFile(parser.fromObjectToText(mod), "./mods/" + mod.id + "/mod.txt")
+    return updateMod(mod)
 }
 
 module.exports = {
@@ -51,7 +69,8 @@ module.exports = {
         })
     },
     getMediaFile: (req, res) => {
-        var file = path.join(__dirname, 'mods', req.params.mod, req.params.file)
+        let file = path.join(__dirname, 'mods', req.params.mod, req.params.file)
+        console.log(file)
         if (fs.existsSync(file)) {
             res.sendFile(file)
         } else {
@@ -60,11 +79,12 @@ module.exports = {
     },
 
     createMod: (req,res) => {
-        if(this.readModFile(req.body.id)) {
+        if(readModFile(req.body.id)) {
             console.log("Project already exits!")
             res.json({error:"A mod with this ID already exists!"})
             return
         }
+        const dPath = path.join(__dirname, "mods", req.body.id)
         fs.mkdirSync(dPath);
         //Create Text
         let txt = ""
@@ -104,31 +124,32 @@ module.exports = {
                 fileStream.pipe(fs.createWriteStream(newPath))
                 //Change the mod in mods
                 mods.forEach(mod => {
-                    if (mod.id === req.body.id) {
+                    if (mod.id === req.params.mod) {
+                        console.log("Uploaded picture to mod: " + mod.id)
                         mod.logo = fileName
-                    }
-                    //Send back new logo path
-                    res.json("mods/" + modName + "/media/" + fileName)
-                    return
+                        saveModFile(mod)
+                    } else{ console.log("Wrong mod: " + mod.id + " Wants: " + req.params.mod)}
                 })
-
+                //Send back new logo path
+                res.json("mods/" + modName + "/media/" + fileName)
             })
             req.pipe(req.busboy)
+        } else{
+            console.log("req.busboy was not added to the picture upload!")
+            res.json("Error!")
         }
-        res.json("Error!")
     },
 
     updateMod: (req, res) => {
         let toUpdate
-        if(!(toUpdate = this.readModFile(req.params.mod))){
-            toUpdate.name = req.body-name
+        if(toUpdate = readModFile(req.params.mod)){
+            toUpdate.name = req.body.name
             toUpdate.version = req.body.version
             toUpdate.author = req.body.author
             toUpdate.description = req.body.description
-            res.json(readModFile(req.params.mod))
-            saveModFile(toUpdate)
-            return
+            res.json(saveModFile(toUpdate))
+        }else{
+            res.json({error: "Mod has not been found!"})
         }
-        res.json({error: "Mod has not been found!"})
     }
 }

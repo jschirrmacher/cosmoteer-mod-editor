@@ -9,6 +9,8 @@
     "react-dom": "^15.6.1"
   },
   "devDependencies": {
+    "chai": "^4.1.0",
+    "enzyme": "^2.9.1",
     "eslint": "^4.2.0",
     "eslint-plugin-flowtype": "^2.35.0",
     "eslint-plugin-import": "^2.7.0",
@@ -17,7 +19,8 @@
     "eslint-plugin-node": "^5.1.0",
     "eslint-plugin-react": "^7.1.0",
     "jest-fetch-mock": "^1.2.0",
-    "react-scripts": "1.0.10"
+    "react-scripts": "1.0.10",
+    "react-test-renderer": "^15.6.1"
   },
   "scripts": {
     "start": "react-scripts start",

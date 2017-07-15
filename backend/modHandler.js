@@ -8,7 +8,7 @@ const stripJs = require('strip-js')
 
 let mods = []
 
-function readModFile(modId) {
+function readModFile(modId, dir = "/mods/", test = false) {
     let modData
     //Find in mods
     mods.forEach(mod => {
@@ -16,14 +16,16 @@ function readModFile(modId) {
     })
     if(!modData){
         try{
-            let fileName = path.join(__dirname, '/mods/', modId, '/mod.txt')
-            modData = parser.readNewFile(fileName)
+            let fileName = path.join(__dirname, dir, modId, '/mod.txt')
+            modData = parser.readNewFile(fileName, test)
             //Add mod id
             modData.id = modId
-            console.log("New mod id: " + modId)
-            mods.push(modData)
+            if(!test){
+                console.log("New mod id: " + modId)
+                mods.push(modData)
+            }
         } catch(e){
-            console.log("Did not find mod file: " + modId)
+            if(!test) console.log("Did not find mod file: " + modId)
             return false
         }}
     return {
@@ -60,14 +62,17 @@ function saveModFile(mod) {
 }
 
 module.exports = {
+    readModFile,
+
     listMods: (req, res) => {
         glob('mods/*/mod.txt', (err, files) => {
             res.json({
                 mods: files.map(file => {
                     let mod = readModFile(file.replace(/mods\/(.*?)\/mod.txt/, '$1'))
+                    if(!mod) {console.log("This mod failed to load. Is the mod.txt correct? "); return null}
                     mod.logo = "/mods/" + mod.id + "/media/" + mod.logo
                     return mod
-                })
+                }).filter(mod => mod)
             })
         })
     },

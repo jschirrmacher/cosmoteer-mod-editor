@@ -23,7 +23,7 @@ exports.newParser = (fileName) => {
     return tokeniser(fs.readFileSync(fileName).toString().replace(/\r/g, ''), newRules)
 }
 
-exports.readNewFile = (fileName) => {
+exports.readNewFile = (fileName, test = false) => {
     let tokenArray = this.newParser(fileName)
     try{
         if (tokenArray[0].type === 'arrayStart') {
@@ -36,8 +36,10 @@ exports.readNewFile = (fileName) => {
             return createObj(tokenArray)
         }
     } catch (e) {
-        console.log("Error --------------------") //eslint-disable-line no-console
-        console.log("Error in file: " + fileName) //eslint-disable-line no-console
+        if(!test) {
+            console.log("Error --------------------")//eslint-disable-line no-console
+            console.log("Error in file: " + fileName) //eslint-disable-line no-console
+        }
         throw e
     }
 }
@@ -82,7 +84,7 @@ function cleanse(string) {
 }
 
 function handleContinuation(str) {
-    return str.split('\\').map(cleanse).join('')
+    return str.split(/\\\n/).map(cleanse).join('')
 }
 
 exports.writeToFile = (lines, file) => {
@@ -129,5 +131,9 @@ exports.fromObjectToText = (mod) => {
         }
         text.push("}")
     }
+    //todo: add next step for all possible
+    //Turn all newlines into form so they are saved correctly in file
+    text = text.map((line) => line.replace(/\n/, "\\n"))
+
     return text
 }

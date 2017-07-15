@@ -50,5 +50,11 @@ describe('File Parser', () => {
             "{", 'desc = "deepDown"', 'data = "3"', "}", "]", "}", '}'])
         done()
     })
+
+    it("Parse inline newlines correctly", done => {
+        let result = parseFile.readNewFile("./Test Files/newlineIncluded.txt")
+        result.description.should.equal('This line\\n has a suprise!\\n Sorry two:( And a continuation\\n. Sorry')
+        done()
+    })
 })
 

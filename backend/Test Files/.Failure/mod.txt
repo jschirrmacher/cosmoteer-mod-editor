@@ -1,0 +1,9 @@
+{
+id = "Test"
+name = "lklsvssdasdsad"
+author = "Ikeasds"
+version = "0.3.2ssasd"
+description = "Please add a descriptionsdsds
+dsdsdssasssxasdasdasd"
+logo = "armor.png"
+}

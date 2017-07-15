@@ -6,6 +6,8 @@ const parser = require("./parseFile")
 const glob = require('glob')
 const stripJs = require('strip-js')
 
+let mods = []
+
 function readModFile(modId) {
     let modData
     //Find in mods
@@ -19,6 +21,7 @@ function readModFile(modId) {
         modData.id = modId
         mods.push(modData)
     }
+    if(!modData) return false
     return {
         id: modData.id,
         name: modData.Name,
@@ -28,8 +31,6 @@ function readModFile(modId) {
         logo: '/mods/' + modId + '/media/' + modData.Logo
     }
 }
-
-let mods = []
 
 module.exports = {
     listMods: (req, res) => {
@@ -49,9 +50,7 @@ module.exports = {
     },
 
     createMod: (req,res) => {
-        console.log(req.body)
-        const dPath = path.join(__dirname, "mods", req.body.id)
-        if(fs.existsSync(dPath)) {
+        if(this.readModFile(req.body.id)) {
             console.log("Project already exits!")
             res.json({error:"A mod with this ID already exists!"})
             return
@@ -71,11 +70,13 @@ module.exports = {
                     } else{
                         txt += line.text + req.body[line.value] + "\n"
                     }
+                    break
+                default:
+                    console.log("An unknown type of line was trying to be inserted into a new mod: " + line.typ)
             }
         })
-        //Create mod.txt
-        const file = path.join(__dirname, "/mods/", req.body.id, "/mod.txt")
-        fs.writeFile(file, txt, err => {
+        //Create mod.txt and laod it into the mods via readModFile()
+        fs.writeFile(path.join(__dirname, "/mods/", req.body.id, "/mod.txt"), txt, err => {
             if (err) {
                 res.json({error: err})
             } else {
@@ -85,40 +86,25 @@ module.exports = {
     },
 
     uploadPicture: (req,res) => {
-        let mod
-        if(req.busboy){
-            req.busboy.on("file", (fieldName, fileStream, fileName) =>{
+        if (req.busboy) {
+            req.busboy.on("file", (fieldName, fileStream, fileName) => {
                 //Save picture
                 const modName = req.params.mod
                 let newPath = path.join(__dirname, "mods", modName, fileName)
                 fileStream.pipe(fs.createWriteStream(newPath))
-                //Change mod.txt
-                const modTXT = path.join(__dirname, "mods", modName, "/mod.txt")
-                let shouldAdd = true
-                let rawmod = fs.readFileSync(modTXT).toString()
-                mod = parser.preparseFile(rawmod)
-                let modText = []
-                mod.forEach(line => {
-                    if(line.search(/Logo\s*=\s*.*/)>= 0) shouldAdd = false
-                    line = line.replace(/Logo\s*=\s*.*/i, 'Logo="' + fileName + '"\n')
-                    modText.push(line)
+                //Change the mod in mods
+                mods.forEach(mod => {
+                    if (mod.id === req.body.id) {
+                        mod.logo = fileName
+                    }
+                    //Send back new logo path
+                    res.json("mods/" + modName + "/media/" + fileName)
                 })
-                //Add new line after author with the logo
-                if(shouldAdd) {
-                    mod.forEach(line => {
-                        if(line.substr(0, 2) == "//") return
-                        if(line.search(/Author\s*=/) >= 0) modText.push('Logo = ' + fileName)
-                    })
-                }
-                //Now write to file
-                let ret = parser.writeToFile(modText, modTXT)
-                //Send back new logo path
-                console.log("sent!")
-                res.json("mods/" + modName + "/media/" + fileName)
+
             })
             req.pipe(req.busboy)
         }
-        console.log("fin")
+        res.json("Error!")
     },
 
     updateMod: (req, res) => {

@@ -1,4 +1,4 @@
-import { Component } from 'react'
+import React, { Component } from 'react'
 import './ModRow.css'
 import TextareaAutosize from 'react-autosize-textarea'
 

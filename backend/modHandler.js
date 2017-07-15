@@ -8,7 +8,7 @@ const stripJs = require('strip-js')
 
 function readModFile(modId) {
     var fileName = path.join(__dirname, '/mods/', modId, '/mod.txt')
-    let data = parser.readFile(fileName)
+    let data = parser.readNewFile(fileName)
     return {
         id: modId,
         name: data.Name,

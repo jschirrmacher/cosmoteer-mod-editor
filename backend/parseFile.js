@@ -38,10 +38,10 @@ function createObj(tokenArray){
     while(token = tokenArray.shift()){
         if(token.type === "definition") obj[token.matches[1]] = cleanse(token.matches[2])
         else if(token.type === "arrayStart") obj[token.matches[1]] = createArray(tokenArray)
-        else if(token.type === "arrayEnd") throw "Can not end array in object"
+        else if(token.type === "arrayEnd") {console.log(token.matches); throw "Can not end array in object"}
         else if(token.type === "objectStart" ) obj[token.matches[1]] = (createObj(tokenArray))
         else if(token.type === "objectEnd") break
-        else if(token.type === "line") throw "Can not add unnamed value(line) to object"
+        else if(token.type === "line") {console.log(token.matches); throw "Can not add unnamed value(line) to object"}
     }
     return obj
 }
@@ -51,7 +51,7 @@ function createArray(tokenArray){
     let obj
     obj = []
     while(token = tokenArray.shift()){
-        if(token.type === "definition") throw "Definitions can not be added directly to array"
+        if(token.type === "definition") throw "Definitions can not be added directly to array " + token.matches
         else if(token.type === "arrayStart" ) obj.push(createArray(tokenArray))
         else if(token.type === "arrayEnd") return obj
         else if(token.type === "objectStart") obj.push(createObj(tokenArray))

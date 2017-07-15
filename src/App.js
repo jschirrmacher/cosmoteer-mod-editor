@@ -1,5 +1,6 @@
-import { Component } from 'react'
+import React, { Component } from 'react'
 import './App.css'
+import Row from './ModRow'
 
 class App extends Component {
     constructor(props) {

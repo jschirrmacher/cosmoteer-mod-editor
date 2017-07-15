@@ -7,19 +7,29 @@ const glob = require('glob')
 const stripJs = require('strip-js')
 
 function readModFile(modId) {
-    var fileName = path.join(__dirname, '/mods/', modId, '/mod.txt')
-    let data = parser.readNewFile(fileName)
+    let modData
+    //Find in mods
+    mods.forEach(mod => {
+        if(mod.id == modID) modData = mod
+    })
+    if(!modData){
+        var fileName = path.join(__dirname, '/mods/', modId, '/mod.txt')
+        modData = parser.readNewFile(fileName)
+        //Add mod id
+        modData.id = modId
+        mods.push(modData)
+    }
     return {
-        id: modId,
-        name: data.Name,
-        author: data.Author,
-        version: data.Version,
-        description: stripJs(data.Description),
-        logo: '/mods/' + modId + '/media/' + data.Logo
+        id: modData.id,
+        name: modData.Name,
+        author: modData.Author,
+        version: modData.Version,
+        description: stripJs(modData.Description),
+        logo: '/mods/' + modId + '/media/' + modData.Logo
     }
 }
 
-let mod
+let mods = []
 
 module.exports = {
     listMods: (req, res) => {
@@ -75,6 +85,7 @@ module.exports = {
     },
 
     uploadPicture: (req,res) => {
+        let mod
         if(req.busboy){
             req.busboy.on("file", (fieldName, fileStream, fileName) =>{
                 //Save picture

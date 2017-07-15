@@ -12,7 +12,7 @@ function readModFile(modId) {
     let modData
     //Find in mods
     mods.forEach(mod => {
-        if(mod.id == modID) modData = mod
+        if(mod.id == modId) modData = mod
     })
     if(!modData){
         var fileName = path.join(__dirname, '/mods/', modId, '/mod.txt')
@@ -30,6 +30,16 @@ function readModFile(modId) {
         description: stripJs(modData.description),
         logo: '/mods/' + modId + '/media/' + modData.logo
     }
+}
+
+function saveModFile(mod) {
+    if(typeof mod !== "object"){
+        //Act as if mod id
+        mods.forEach(_mod => {
+            if(_mod.id === mod) mod = _mod
+        })
+    }
+    parser.writeToFile(parser.fromObejctToText(mod), "./mods/" + mod.id + "/mod.txt")
 }
 
 module.exports = {

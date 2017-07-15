@@ -43,7 +43,8 @@ describe('File Parser', () => {
     })
 
     it('Mod to Text Complex Test', done => {
-        let result = parseFile.fromObjectToText({name: "Better Engine", version: "1.0.3", actions: ["Add 1", "Add 2", "Add 3", ["Add 4"]], sampleStruct: {name: "a sample", data: [3, 4, 5, 6, 8, {desc: "deepDown", data: 3}] }})
+        let result = parseFile.fromObjectToText({name: "Better Engine", version: "1.0.3", actions: ["Add 1", "Add 2", "Add 3", ["Add 4"]],
+            sampleStruct: {name: "a sample", data: [3, 4, 5, 6, 8, {desc: "deepDown", data: 3}] }})
         result.should.deepEqual(['{', 'name = "Better Engine"', 'version = "1.0.3"','actions[', "Add 1", "Add 2", "Add 3",
             "[", "Add 4", "]", "]", "sampleStruct{", 'name = "a sample"', "data[", "3", "4", "5", "6", "8",
             "{", 'desc = "deepDown"', 'data = "3"', "}", "]", "}", '}'])

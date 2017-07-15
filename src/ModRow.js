@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react' // eslint-disable-line no-unused-vars
 import './ModRow.css'
-import TextareaAutosize from 'react-autosize-textarea'
+import TextareaAutosize from 'react-autosize-textarea' // eslint-disable-line no-unused-vars
 
 class ModRow extends Component {
     constructor(props) {

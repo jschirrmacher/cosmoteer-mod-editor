@@ -21,12 +21,18 @@ describe('File Parser', () => {
     })
     it('Structure Creator correctly creates base object for simple mod.txt', done =>{
         let result = parseFile.readNewFile('./Test Files/simpleMod.txt')
-        result.should.deepEqual({Author: 'Me', Version: '1.0.0', Name: 'Test'})
+        result.should.deepEqual({author: 'Me', version: '1.0.0', name: 'Test'})
         done()
     })
     it('Structure Creator correctly handles arrays and objects', done =>{
         let result = parseFile.readNewFile('./Test Files/layers.txt')
-        result.should.deepEqual([{Value:'Test'}, {Value: 'Test 2'}, ['2'], {Name: ['Test']}])
+        result.should.deepEqual([{value:'Test'}, {value: 'Test 2'}, ['2'], {name: ['Test']}])
+        done()
+    })
+
+    it('should recognise definitions with continuation lines', done => {
+        let result = parseFile.readNewFile('./Test Files/ContinuationLine.txt')
+        result.should.deepEqual({description: 'A small test is very important!'})
         done()
     })
 })

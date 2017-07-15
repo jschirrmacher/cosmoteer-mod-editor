@@ -23,13 +23,6 @@ describe('Tokeniser', () => {
         result[1].matches[2].should.equal('"Bob Sherman"')
         done()
     })
-    it('should recognise definitions with continuation lines', done => {
-        let result = tokeniser('Description = "A small test is"\\n"very important!"', rules)
-        result[0].type.should.equal('definition')
-        result[0].matches[1].should.equal('Description')
-        result[0].matches[2].should.equal('"A small test is"\\n"very important!"')
-        done()
-    })
 
     it('should recognise arrays', done => {
         let result = tokeniser('abc [\n\tx = 1\n]', rules)
@@ -95,15 +88,6 @@ describe('Tokeniser', () => {
         result[0].matches[1].should.equal('abc')
         result[2].type.should.equal('arrayEnd')
         result[2].matches[0].trim().should.equal(']')
-        done()
-    })
-
-
-    it('should handle continuation lines as expected', done => {
-        let result = tokeniser('T = "abc"\\\n\t"def"', rules)
-        result.should.be.an.array
-        result[0].type.should.equal('definition')
-        result[0].matches[1].should.equal('abcdef')
         done()
     })
 })

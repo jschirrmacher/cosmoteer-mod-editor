@@ -25,6 +25,7 @@
     "tokenizer-array": "^1.1.0"
   },
   "devDependencies": {
+    "eslint-plugin-mocha": "^4.11.0",
     "mocha": "^3.4.2",
     "should": "^11.2.1"
   }

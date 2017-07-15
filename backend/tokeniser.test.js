@@ -1,4 +1,4 @@
-/*global describe, it */
+/*eslint-env mocha */
 const should = require('should') // eslint-disable-line no-unused-vars
 const tokeniser = require('./tokeniser')
 const rules = require('./rules')

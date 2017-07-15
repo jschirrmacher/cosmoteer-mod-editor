@@ -73,11 +73,7 @@ function cleanse(string) {
 }
 
 function handleContinuation(str) {
-    if (str.search(/\\\\/)) {
-        return str.split('\\').map(cleanse).join('')
-    } else {
-        return cleanse(str)
-    }
+    return str.split('\\').map(cleanse).join('')
 }
 
 exports.writeToFile = (lines, file) => {

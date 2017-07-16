@@ -55,14 +55,14 @@ class ModRow extends Component {
 
     render() {
         function getDescription(data) {
-            return {__html: data.description}
+            return {__html: data.description.replace(/\\n/g,"\n")}
         }
 
         let description = this.state.selected ?
             <TextareaAutosize className="description" name="description"
                 onChange={e => this.changed(e)}
                 onBlur={() => this.deselect()}
-                value={this.props.data.description} /> :
+                value={this.props.data.description.replace(/\\n/g,"\n")} /> :
             <span className="description" onClick={() => this.select()}
                 dangerouslySetInnerHTML={getDescription(this.props.data)} />
 

@@ -26,7 +26,7 @@ describe('File Parser', () => {
     })
     it('Structure Creator correctly handles arrays and objects', done =>{
         let result = parseFile.readNewFile('./Test Files/layers.txt')
-        result.should.deepEqual({"":[{value:'Test'}, {value: 'Test 2'}, ['2'], {name: ['Test']}]})
+        result.should.deepEqual({'':[{value:'Test'}, {value: 'Test 2'}, ['2'], {name: ['Test']}]})
         done()
     })
 
@@ -37,24 +37,23 @@ describe('File Parser', () => {
     })
 
     it('Mod to Text Simple Test', done =>{
-        let result = parseFile.fromObjectToText({"":{name: "Bob", version: "1.0.0", author: "Someone", description:"A simple test mod"}})
+        let result = parseFile.fromObjectToText({'':{name: 'Bob', version: '1.0.0', author: 'Someone', description:'A simple test mod'}})
         result.should.deepEqual(['{', 'name = "Bob"', 'version = "1.0.0"', 'author = "Someone"', 'description = "A simple test mod"', '}'])
         done()
     })
 
     it('Mod to Text Complex Test', done => {
-        let result = parseFile.fromObjectToText({name: "Better Engine", version: "1.0.3", actions: ["Add 1", "Add 2", "Add 3", ["Add 4"]],
-            sampleStruct: {name: "a sample", data: [3, 4, 5, 6, 8, {desc: "deepDown", data: 3}] }})
-        result.should.deepEqual(['name = "Better Engine"', 'version = "1.0.3"','actions[', "Add 1", "Add 2", "Add 3",
-            "[", "Add 4", "]", "]", "sampleStruct{", 'name = "a sample"', "data[", "3", "4", "5", "6", "8",
-            "{", 'desc = "deepDown"', 'data = "3"', "}", "]", "}"])
+        let result = parseFile.fromObjectToText({name: 'Better Engine', version: '1.0.3', actions: ['Add 1', 'Add 2', 'Add 3', ['Add 4']],
+            sampleStruct: {name: 'a sample', data: [3, 4, 5, 6, 8, {desc: 'deepDown', data: 3}] }})
+        result.should.deepEqual(['name = "Better Engine"', 'version = "1.0.3"','actions[', 'Add 1', 'Add 2', 'Add 3',
+            '[', 'Add 4', ']', ']', 'sampleStruct{', 'name = "a sample"', 'data[', '3', '4', '5', '6', '8',
+            '{', 'desc = "deepDown"', 'data = "3"', '}', ']', '}'])
         done()
     })
 
-    it("Parse inline newlines correctly", done => {
-        let result = parseFile.readNewFile("./Test Files/newlineIncluded.txt")
-        console.log(result)
-        result[""].description.should.equal('This line\\n has a suprise!\\n Sorry two:( And a continuation\\n. Sorry')
+    it('Parse inline newlines correctly', done => {
+        let result = parseFile.readNewFile('./Test Files/newlineIncluded.txt')
+        result[''].description.should.equal('This line\\n has a suprise!\\n Sorry two:( And a continuation\\n. Sorry')
         done()
     })
 })

@@ -9,7 +9,7 @@ const newRules = require('./rules')
 
 function throwError(errorMessage, additionalData = []){
     additionalData.forEach(data => {
-        console.log(data.toString())
+        console.log(data.toString())    //eslint-disable-line no-console
     })
     throw errorMessage
 }
@@ -64,18 +64,13 @@ function createArray(tokenArray) {
     let token
     let obj
     obj = []
-    try {
-        while ((token = tokenArray.shift())) {
-            if (token.type === 'definition') throwError('Definitions can not be added directly to array', [tokeniser.matches])
-            else if (token.type === 'arrayStart') obj.push(createArray(tokenArray))
-            else if (token.type === 'arrayEnd') return obj
-            else if (token.type === 'objectStart') obj.push(createObj(tokenArray))
-            else if (token.type === 'objectEnd') throwError('Cannot end object in array', [tokeniser.matches])
-            else if (token.type === 'line') obj.push(cleanse(token.matches[0]))
-        }
-    } catch (e) {
-        console.log(token.matches) // eslint-disable-line no-console
-        throw e
+    while ((token = tokenArray.shift())) {
+        if (token.type === 'definition') throwError('Definitions can not be added directly to array', [tokeniser.matches])
+        else if (token.type === 'arrayStart') obj.push(createArray(tokenArray))
+        else if (token.type === 'arrayEnd') return obj
+        else if (token.type === 'objectStart') obj.push(createObj(tokenArray))
+        else if (token.type === 'objectEnd') throwError('Cannot end object in array', [tokeniser.matches])
+        else if (token.type === 'line') obj.push(cleanse(token.matches[0]))
     }
     return obj
 }

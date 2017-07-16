@@ -90,4 +90,15 @@ describe('Tokeniser', () => {
         result[2].matches[0].trim().should.equal(']')
         done()
     })
+
+    it('ignores semicolons after definitions', done => {
+        let result = tokeniser('Name = "Test";', rules)
+        result.should.be.an.array
+        result.length.should.equal(2)
+        result[0].type.should.equal('definition')
+        result[0].matches[1].should.equal('Name')
+        result[0].matches[2].should.equal('"Test"')
+        result[1].type.should.equal('line')
+        done()
+    })
 })

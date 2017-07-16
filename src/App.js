@@ -77,6 +77,12 @@ class App extends Component {
         }, this)
     }
 
+    rowSelected(id) {
+        this.setState({
+            selectedRow: id
+        })
+    }
+
     render() {
         return (
             <div className="App">
@@ -86,7 +92,8 @@ class App extends Component {
                 </div>
                 <ul className="App-intro">
                 {this.state.mods.length
-                    ? this.state.mods.map((row) => <Row key={row.id} data={row} rowChanged={v => this.rowChanged(v)}/>)
+                    ? this.state.mods.map((row) => <Row key={row.id} data={row} selected={this.state.selectedRow === row.id}
+                    rowChanged={v => this.rowChanged(v)} onUserClick={() => this.rowSelected(row.id)}/>)
                     : 'No Mods found'
                 }
                 </ul>

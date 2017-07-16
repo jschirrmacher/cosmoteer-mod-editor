@@ -3,18 +3,6 @@ import './ModRow.css'
 import TextareaAutosize from 'react-autosize-textarea' // eslint-disable-line no-unused-vars
 
 class ModRow extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {selected: false}
-    }
-
-    select() {
-        this.setState({selected: true})
-    }
-
-    deselect() {
-        this.setState({selected: false})
-    }
 
     changed(e) {
         let value = this.props.data
@@ -58,28 +46,35 @@ class ModRow extends Component {
             return {__html: data.description.replace(/\\n/g,"\n")}
         }
 
-        let description = this.state.selected ?
+        let description = this.props.selected ?
             <TextareaAutosize className="description" name="description"
                 onChange={e => this.changed(e)}
-                onBlur={() => this.deselect()}
                 value={this.props.data.description.replace(/\\n/g,"\n")} /> :
-            <span className="description" onClick={() => this.select()}
-                dangerouslySetInnerHTML={getDescription(this.props.data)} />
+            <span className="description" dangerouslySetInnerHTML={getDescription(this.props.data)} />
+
+        let modEditor = this.props.selected ?
+            <div className = "modPartEditor ">
+                <hr/>
+                <p>To Show</p>
+            </div> : ""
 
         return (
-            <li>
-                <form>
-                    <div className="image-upload">
-                        <label htmlFor={this.props.data.id + 'file-input'}>
-                            <img src={this.props.data.logo} alt="Mod Logo"/>
-                        </label>
-                        <input className="file-input" id={this.props.data.id + 'file-input'} type="file" onChange={e => this.pictureChanged(e.target)} name="picture"/>
-                    </div>
-                </form>
-                <input type="text" name="name" value={this.props.data.name} onChange={e => this.changed(e)} />
-                <input type="text" name="author" value={this.props.data.author} onChange={e => this.changed(e)} />
-                <input type="text" name="version" value={this.props.data.version} onChange={e => this.changed(e)} />
-                {description}
+            <li onClick = {() => this.props.onUserClick()}>
+                <div className = "modTitleContainer">
+                    <form>
+                        <div className="image-upload">
+                            <label htmlFor={this.props.data.id + 'file-input'}>
+                                <img src={this.props.data.logo} alt="Mod Logo"/>
+                            </label>
+                            <input className="file-input" id={this.props.data.id + 'file-input'} type="file" onChange={e => this.pictureChanged(e.target)} name="picture"/>
+                        </div>
+                    </form>
+                    <input type="text" name="name" value={this.props.data.name} onChange={e => this.changed(e)} />
+                    <input type="text" name="author" value={this.props.data.author} onChange={e => this.changed(e)} />
+                    <input type="text" name="version" value={this.props.data.version} onChange={e => this.changed(e)} />
+                    {description}
+                </div>
+            {modEditor}
             </li>
         )
     }

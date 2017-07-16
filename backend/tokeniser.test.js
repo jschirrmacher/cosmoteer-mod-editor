@@ -98,7 +98,7 @@ describe('Tokeniser', () => {
         result[0].type.should.equal('definition')
         result[0].matches[1].should.equal('Name')
         result[0].matches[2].should.equal('"Test"')
-        result[1].type.should.equal('line')
+        result[1].type.should.equal('semicolon')
         done()
     })
 })

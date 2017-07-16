@@ -5,6 +5,7 @@ module.exports = [
     {type: 'arrayEnd', regex: /^\s*\]/},
     {type: 'objectStart', regex: /^\s*(\w*)\s*\{/},
     {type: 'objectEnd', regex: /^\s*\}/},
+    {type: 'semicolon', regex: /^;/},
     {type: 'line', regex: /^[^\]\}\n]+/},
     {type: 'emptyLine', regex: /^\n*/}
 ]

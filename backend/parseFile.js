@@ -37,8 +37,8 @@ exports.readNewFile = (fileName, test = false) => {
         }
     } catch (e) {
         if(!test) {
-            console.log("Error --------------------")//eslint-disable-line no-console
-            console.log("Error in file: " + fileName) //eslint-disable-line no-console
+            console.log('Error --------------------') //eslint-disable-line no-console
+            console.log('Error in file: ' + fileName) //eslint-disable-line no-console
         }
         throw e
     }
@@ -52,10 +52,10 @@ function createObj(tokenArray) {
     while ((token = tokenArray.shift())) {
         if (token.type === 'definition') obj[token.matches[1].toLowerCase()] = handleContinuation(token.matches[2])
         else if (token.type === 'arrayStart') obj[token.matches[1].toLowerCase()] = createArray(tokenArray)
-        else if (token.type === 'arrayEnd') throwError('Can not end array in object', [tokeniser.matches])
+        else if (token.type === 'arrayEnd') throwError('Can not end array in object', [token.matches])
         else if (token.type === 'objectStart') obj[token.matches[1].toLowerCase()] = createObj(tokenArray)
         else if (token.type === 'objectEnd') break
-        else if (token.type === 'line') throwError('Can not add unnamed value(line) to object', [tokeniser.matches])
+        else if (token.type === 'line') throwError('Can not add unnamed value(line) to object', [token.matches])
     }
     return obj
 }
@@ -65,11 +65,11 @@ function createArray(tokenArray) {
     let obj
     obj = []
     while ((token = tokenArray.shift())) {
-        if (token.type === 'definition') throwError('Definitions can not be added directly to array', [tokeniser.matches])
+        if (token.type === 'definition') throwError('Definitions can not be added directly to array', [token.matches])
         else if (token.type === 'arrayStart') obj.push(createArray(tokenArray))
         else if (token.type === 'arrayEnd') return obj
         else if (token.type === 'objectStart') obj.push(createObj(tokenArray))
-        else if (token.type === 'objectEnd') throwError('Cannot end object in array', [tokeniser.matches])
+        else if (token.type === 'objectEnd') throwError('Cannot end object in array', [token.matches])
         else if (token.type === 'line') obj.push(cleanse(token.matches[0]))
     }
     return obj
@@ -83,53 +83,37 @@ function handleContinuation(str) {
     return str.split(/\\\n/).map(cleanse).join('')
 }
 
-exports.writeToFile = (lines, file) => {
-    let tabcounter
-    tabcounter = 0
-    let toWrite
-    toWrite = ''
-    lines.forEach((line) => {
-        //add new line
-        line += line.substr(-1) == '\n' ? '' : '\n'
-        //add tabs
-        for (let i = 0; i < tabcounter; i++) line = '\t' + line
+function toString(value, level = 0, useTabs = true) {
+    function tabs(str, num = level) {
+        return Array(num).join('\t') + str
+    }
 
-        toWrite += line
+    function isArray(value) {
+        return value.constructor === Array
+    }
 
-        tabcounter += line.search(/[\[\{]]/) + 1
-        tabcounter -= line.search(/[\]\}]/) + 1
-    })
-    fs.writeFileSync(file, toWrite)
+    function isObject(value) {
+        return typeof value === 'object'
+    }
+
+    function isNumeric(value) {
+        return !Number.isNaN(value) && Number.isFinite(value)
+    }
+
+    if (isArray(value)) {
+        return (useTabs ? tabs('[\n') : '[\n')
+            + value.map(entry => toString(entry, level + 1)).join('\n') + '\n'
+            + tabs(']')
+    } else if (isObject(value)) {
+        let elems = Object.keys(value).map(key => {
+            let concat = isArray(value[key]) || isObject(value[key]) ? ' ' : ' = '
+            return tabs(key + concat, level + 1) + toString(value[key], level + 1, false)
+        }).join('\n') + '\n'
+        return level ? tabs('{\n') + elems + tabs('}') : elems
+    } else {
+        value = isNumeric(value) ? value : '"' + value.replace(/\n/g, '\\n') + '"'
+        return useTabs ? tabs(value) : value
+    }
 }
 
-exports.fromObjectToText = (mod) => {
-    let text = []
-    if(mod.constructor === Array) addArray(mod)
-    else addObject(mod)
-    function addArray(array, name = ""){
-        text.push(name + "[")
-        array.forEach(value => {
-            if(value.constructor === Array) addArray(value)
-            else if(typeof value === "object") addObject(value)
-            else text.push(value.toString())
-        })
-        text.push("]")
-    }
-    function addObject(object, name = ""){
-        text.push(name + "{")
-        for(let prop in object){
-            if(object.hasOwnProperty(prop) && prop !== "id"){
-                if(prop === "nonamed") text.append(object[prop])
-                else if(object[prop].constructor === Array) addArray(object[prop], prop)
-                else if(typeof object[prop] === "object") addObject(object[prop], prop)
-                else text.push(prop + ' = "' + object[prop] + '"')
-            }
-        }
-        text.push("}")
-    }
-    //Turn all newlines into form so they are saved correctly in file
-    text = text.map((line) => line.replace(/\n/g, "\\n"))
-    text.shift()
-    text.pop()
-    return text
-}
+exports.toString = toString

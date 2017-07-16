@@ -1,0 +1,17 @@
+name = "Better Engine"
+actions [
+	"Add 1"
+	[
+		"Add 4"
+	]
+]
+sampleStruct {
+	name = "a sample"
+	data [
+		3
+		{
+			desc = "deepDown"
+			data = 3
+		}
+	]
+}

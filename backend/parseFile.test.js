@@ -1,6 +1,7 @@
 /*eslint-env mocha */
 const should = require('should') // eslint-disable-line no-unused-vars
 const parseFile = require('./parseFile')
+const fs = require('fs')
 
 describe('File Parser', () => {
     it('Can Read Test File', done => {
@@ -37,23 +38,33 @@ describe('File Parser', () => {
     })
 
     it('Mod to Text Simple Test', done =>{
-        let result = parseFile.fromObjectToText({'':{name: 'Bob', version: '1.0.0', author: 'Someone', description:'A simple test mod'}})
-        result.should.deepEqual(['{', 'name = "Bob"', 'version = "1.0.0"', 'author = "Someone"', 'description = "A simple test mod"', '}'])
+        let result = parseFile.toString({name: 'Bob', version: '1.0.0', author: 'Someone', description:'A simple test mod'})
+        result.should.equal('name = "Bob"\nversion = "1.0.0"\nauthor = "Someone"\ndescription = "A simple test mod"\n')
+        done()
+    })
+
+    it('Mod to Text of numbers', done =>{
+        let result = parseFile.toString({int: 1, float: 2.3})
+        result.should.equal('int = 1\nfloat = 2.3\n')
         done()
     })
 
     it('Mod to Text Complex Test', done => {
-        let result = parseFile.fromObjectToText({name: 'Better Engine', version: '1.0.3', actions: ['Add 1', 'Add 2', 'Add 3', ['Add 4']],
-            sampleStruct: {name: 'a sample', data: [3, 4, 5, 6, 8, {desc: 'deepDown', data: 3}] }})
-        result.should.deepEqual(['name = "Better Engine"', 'version = "1.0.3"','actions[', 'Add 1', 'Add 2', 'Add 3',
-            '[', 'Add 4', ']', ']', 'sampleStruct{', 'name = "a sample"', 'data[', '3', '4', '5', '6', '8',
-            '{', 'desc = "deepDown"', 'data = "3"', '}', ']', '}'])
+        let result = parseFile.toString({name: 'Better Engine', actions: ['Add 1', ['Add 4']],
+            sampleStruct: {name: 'a sample', data: [3, {desc: 'deepDown', data: 3}] }})
+        result.should.equal(fs.readFileSync('./Test Files/complex.txt').toString())
         done()
     })
 
     it('Parse inline newlines correctly', done => {
         let result = parseFile.readNewFile('./Test Files/newlineIncluded.txt')
         result[''].description.should.equal('This line\\n has a suprise!\\n Sorry two:( And a continuation\\n. Sorry')
+        done()
+    })
+
+    it('Parser creates and writes file safely', done => {
+        let result = parseFile.toString({description: 'this\n may \n fail'})
+        result.should.equal('description = "this\\n may \\n fail"\n')
         done()
     })
 })

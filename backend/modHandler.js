@@ -46,13 +46,13 @@ function updateMod(newVersion){
 }
 
 function saveModFile(mod) {
-    if(typeof mod !== "object"){
+    if (typeof mod !== 'object') {
         //Act as if mod id
         mods.forEach(_mod => {
             if(_mod.id === mod) mod = _mod
         })
     }
-    parser.writeToFile(parser.fromObjectToText(mod), "./mods/" + mod.id + "/mod.txt")
+    fs.writeFileSync('./mods/' + mod.id + '/mod.txt', parser.toString(mod))
     return updateMod(mod)
 }
 
@@ -74,10 +74,10 @@ module.exports = {
     getMediaFile: (req, res) => {
     let file = path.join(__dirname, 'mods', req.params.mod, req.params.file)
     if (fs.existsSync(file)) {
-    res.sendFile(file)
-} else {
-    res.sendFile(path.join(__dirname, 'plug.png'))
-}
+        res.sendFile(file)
+    } else {
+        res.sendFile(path.join(__dirname, 'plug.png'))
+    }
 },
 
     createMod: (req,res) => {

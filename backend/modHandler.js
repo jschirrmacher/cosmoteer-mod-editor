@@ -25,17 +25,12 @@ function readModFile(modId, dir = "/mods/", test = false) {
                 mods.push(modData)
             }
         } catch(e){
-            if(!test) console.log("Did not find mod file: " + modId)
+            if(!test) console.log("Did not find mod file: " + modId + e)
             return false
-        }}
-    return {
-        id: modData.id,
-        name: modData.name,
-        author: modData.author,
-        version: modData.version,
-        description: stripJs(modData.description),
-        logo: modData.logo
+        }
     }
+    modData.description = stripJs(modData.description)
+    return modData
 }
 
 function updateMod(newVersion){
@@ -68,7 +63,7 @@ module.exports = {
         glob('mods/*/mod.txt', (err, files) => {
             res.json({
                 mods: files.map(file => {
-                    let mod = readModFile(file.replace(/mods\/(.*?)\/mod.txt/, '$1'))
+                    let mod = Object.assign({},readModFile(file.replace(/mods\/(.*?)\/mod.txt/, '$1')))
                     if(!mod) {console.log("This mod failed to load. Is the mod.txt correct? "); return null}
                     mod.logo = "/mods/" + mod.id + "/media/" + mod.logo
                     return mod

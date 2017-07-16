@@ -76,7 +76,7 @@ describe('Tokeniser', () => {
         result[1].matches[1].should.equal('')
         result[2].matches[0].should.equal('\n\t]')
         result[3].matches[0].should.equal('\n]')
-       done()
+        done()
     })
 
     it('should recognise literals in an array', done => {

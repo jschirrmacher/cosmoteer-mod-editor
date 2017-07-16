@@ -21,6 +21,7 @@
     "body-parser": "^1.17.2",
     "connect-busboy": "0.0.2",
     "express": "^4.15.3",
+    "js-tokeniser": "^1.0.2",
     "strip-js": "^1.0.6",
     "tokenizer-array": "^1.1.0"
   },

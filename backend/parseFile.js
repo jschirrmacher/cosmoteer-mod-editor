@@ -3,7 +3,7 @@
  */
 'use strict'
 const fs = require('fs')
-const tokeniser = require('./tokeniser')
+const tokeniser = require('js-tokeniser')
 
 const newRules = require('./rules')
 

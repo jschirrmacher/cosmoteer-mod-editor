@@ -25,15 +25,15 @@ exports.newParser = (fileName) => {
 
 exports.readNewFile = (fileName, test = false) => {
     let tokenArray = this.newParser(fileName)
+    let returnValue
+    returnValue = {}
     try{
         if (tokenArray[0].type === 'arrayStart') {
-            tokenArray.shift()
-            return createArray(tokenArray)
+            returnValue[tokenArray.shift().matches[1]] = createArray(tokenArray)
         } else if (tokenArray[0].type === 'objectStart') {
-            tokenArray.shift()
-            return createObj(tokenArray)
+            returnValue[tokenArray.shift().matches[1]] = createObj(tokenArray)
         } else {
-            return createObj(tokenArray)
+            returnValue = createObj(tokenArray)
         }
     } catch (e) {
         if(!test) {
@@ -42,6 +42,7 @@ exports.readNewFile = (fileName, test = false) => {
         }
         throw e
     }
+    return returnValue
 }
 
 function createObj(tokenArray) {
@@ -122,7 +123,7 @@ exports.fromObjectToText = (mod) => {
     function addObject(object, name = ""){
         text.push(name + "{")
         for(let prop in object){
-            if(object.hasOwnProperty(prop)){
+            if(object.hasOwnProperty(prop) && prop !== "id"){
                 if(prop === "nonamed") text.append(object[prop])
                 else if(object[prop].constructor === Array) addArray(object[prop], prop)
                 else if(typeof object[prop] === "object") addObject(object[prop], prop)
@@ -131,9 +132,9 @@ exports.fromObjectToText = (mod) => {
         }
         text.push("}")
     }
-    //todo: add next step for all possible
     //Turn all newlines into form so they are saved correctly in file
-    text = text.map((line) => line.replace(/\n/, "\\n"))
-
+    text = text.map((line) => line.replace(/\n/g, "\\n"))
+    text.shift()
+    text.pop()
     return text
 }

@@ -21,6 +21,7 @@ class App extends Component {
     }
 
     static titleSort(a, b) {
+        console.log(a)
         return a.name.localeCompare(b.name)
     }
 

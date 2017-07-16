@@ -65,20 +65,20 @@ module.exports = {
                 mods: files.map(file => {
                     let mod = Object.assign({},readModFile(file.replace(/mods\/(.*?)\/mod.txt/, '$1')))
                     if(!mod) {console.log("This mod failed to load. Is the mod.txt correct? "); return null}
-                    mod.logo = "/mods/" + mod.id + "/media/" + mod.logo
+                    if(mod.name !== undefined) mod.logo = "/mods/" + mod.id + "/media/" + mod.logo
                     return mod
                 }).filter(mod => mod)
             })
         })
     },
     getMediaFile: (req, res) => {
-        let file = path.join(__dirname, 'mods', req.params.mod, req.params.file)
-        if (fs.existsSync(file)) {
-            res.sendFile(file)
-        } else {
-            res.sendFile(path.join(__dirname, 'plug.png'))
-        }
-    },
+    let file = path.join(__dirname, 'mods', req.params.mod, req.params.file)
+    if (fs.existsSync(file)) {
+    res.sendFile(file)
+} else {
+    res.sendFile(path.join(__dirname, 'plug.png'))
+}
+},
 
     createMod: (req,res) => {
         if(readModFile(req.body.id)) {

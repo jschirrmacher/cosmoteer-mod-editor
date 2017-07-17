@@ -44,7 +44,7 @@ class ModRow extends Component {
 
     render() {
         function getDescription(data) {
-            return {__html: data.description.replace(/\\n/g,"\n")}
+            return {__html: data.description.replace(/\\n/g,'\n')}
         }
 
         let description = this.props.selected ?

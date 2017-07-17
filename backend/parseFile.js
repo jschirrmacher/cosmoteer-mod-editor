@@ -4,12 +4,13 @@
 'use strict'
 const fs = require('fs')
 const tokeniser = require('js-tokeniser')
+const winston = require('winston')
 
 const newRules = require('./rules')
 
 function throwError(errorMessage, additionalData = []){
     additionalData.forEach(data => {
-        console.log(data.toString())    //eslint-disable-line no-console
+        winston.log(data.toString())    //eslint-disable-line no-console
     })
     throw errorMessage
 }
@@ -29,18 +30,23 @@ exports.readNewFile = (fileName, test = false) => {
     returnValue = {}
     try{
         if (tokenArray[0].type === 'arrayStart') {
-            returnValue[tokenArray.shift().matches[1]] = createArray(tokenArray)
+            returnValue[tokenArray.shift().matches[1].toLowerCase()] = createArray(tokenArray)
         } else if (tokenArray[0].type === 'objectStart') {
-            returnValue[tokenArray.shift().matches[1]] = createObj(tokenArray)
+            returnValue[tokenArray.shift().matches[1].toLowerCase()] = createObj(tokenArray)
         } else {
             returnValue = createObj(tokenArray)
         }
     } catch (e) {
         if(!test) {
-            console.log('Error --------------------') //eslint-disable-line no-console
-            console.log('Error in file: ' + fileName) //eslint-disable-line no-console
+            winston.log('Error --------------------') //eslint-disable-line no-console
+            winston.log('Error in file: ' + fileName) //eslint-disable-line no-console
         }
         throw e
+    }
+    //Add object _ignore
+    if(!test){
+        returnValue.ignore = {toAdd: []}
+        if(returnValue.stringsfolder === undefined) returnValue.ignore.toAdd.push('stringsfolder')
     }
     return returnValue
 }
@@ -99,7 +105,7 @@ function toString(value, level = 0, useTabs = true) {
     function isNumeric(value) {
         return !Number.isNaN(value) && Number.isFinite(value)
     }
-
+    delete value.ignore
     if (isArray(value)) {
         return (useTabs ? tabs('[\n') : '[\n')
             + value.map(entry => toString(entry, level + 1)).join('\n') + '\n'

@@ -16,23 +16,23 @@ describe('File Parser', () => {
         done()
     })
     it('Structure Creator runs', done =>{
-        let result = parseFile.readNewFile('./Test Files/simple.txt')
+        let result = parseFile.readNewFile('./Test Files/simple.txt', true)
         result.should.deepEqual({})
         done()
     })
     it('Structure Creator correctly creates base object for simple mod.txt', done =>{
-        let result = parseFile.readNewFile('./Test Files/simpleMod.txt')
+        let result = parseFile.readNewFile('./Test Files/simpleMod.txt', true)
         result.should.deepEqual({author: 'Me', version: '1.0.0', name: 'Test'})
         done()
     })
     it('Structure Creator correctly handles arrays and objects', done =>{
-        let result = parseFile.readNewFile('./Test Files/layers.txt')
+        let result = parseFile.readNewFile('./Test Files/layers.txt', true)
         result.should.deepEqual({'':[{value:'Test'}, {value: 'Test 2'}, ['2'], {name: ['Test']}]})
         done()
     })
 
     it('should recognise definitions with continuation lines', done => {
-        let result = parseFile.readNewFile('./Test Files/ContinuationLine.txt')
+        let result = parseFile.readNewFile('./Test Files/ContinuationLine.txt', true)
         result.should.deepEqual({description: 'A small test is very important!'})
         done()
     })
@@ -52,7 +52,7 @@ describe('File Parser', () => {
     it('Mod to Text Complex Test', done => {
         let result = parseFile.toString({name: 'Better Engine', actions: ['Add 1', ['Add 4']],
             sampleStruct: {name: 'a sample', data: [3, {desc: 'deepDown', data: 3}] }})
-        result.should.equal(fs.readFileSync('./Test Files/complex.txt').toString())
+        result.should.equal(fs.readFileSync('./Test Files/complex.txt').toString().replace(/\r/g, ''))
         done()
     })
 
@@ -65,6 +65,18 @@ describe('File Parser', () => {
     it('Parser creates and writes file safely', done => {
         let result = parseFile.toString({description: 'this\n may \n fail'})
         result.should.equal('description = "this\\n may \\n fail"\n')
+        done()
+    })
+
+    it('should add ignore object with toAdd array', done => {
+        let result = parseFile.readNewFile('./Test Files/simple.txt')
+        result.should.deepEqual({ignore: {toAdd: ["stringsfolder"]}})
+        done()
+    })
+
+    it('should find complete.txt to be complete', done => {
+        let result = parseFile.readNewFile('./Test Files/complete.txt')
+        result.should.deepEqual({stringsfolder : [], ignore: {toAdd: []} })
         done()
     })
 })

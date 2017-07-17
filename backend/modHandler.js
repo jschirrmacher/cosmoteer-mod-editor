@@ -162,13 +162,13 @@ module.exports = {
     },
 
     mainModData: (req, res) => {
-        const needed = ["stringsfolder"]
+        const needed = ['stringsfolder']
         mods.forEach(mod => {
             if(mod.id === req.params.mod) {
                 let data = []
                 needed.forEach(part => {
                     if (mod[part] !== undefined) data.push({part: mod[part]})
-                    else data.push({part: ""})
+                    else data.push({part: ''})
                 })
                 res.json(data)
             }

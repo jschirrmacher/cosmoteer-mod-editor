@@ -20,7 +20,8 @@ winston.add(winston.transports.Console, {timestamp:true})
 
 app.enable('trust proxy')
 app.use(expressWinston.logger({
-    transports: [new winston.transports.Console({ timestamp: true })]
+    transports: [new winston.transports.Console({ timestamp: true })],
+    meta: false
 }))
 
 app.use(busboy())

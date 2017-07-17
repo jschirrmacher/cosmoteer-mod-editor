@@ -1,17 +1,17 @@
-li {
+.ModList > li {
   list-style: none;
   border: 1px solid #ddd;
   padding: 10px 10px 10px 100px;
   min-height: 80px;
   margin: 0 10px; }
-  li img {
+  .ModList > li img {
     position: absolute;
     left: 20px;
     width: 80px;
     height: 80px; }
-  li input[name='title'] {
+  .ModList > li input[name='title'] {
     font-size: 120%; }
-  li .description {
+  .ModList > li .description {
     display: block;
     width: 100%;
     font-size: 90%;
@@ -20,19 +20,19 @@ li {
     line-height: 1;
     margin-top: 1em;
     font-family: sans-serif; }
-    li .description green {
+    .ModList > li .description green {
       color: green; }
-  li textarea.description {
+  .ModList > li textarea.description {
     min-height: 50px;
     border: none; }
-  li input {
+  .ModList > li input {
     display: block;
     width: 100%;
     font-size: 100%;
     border: none; }
 
-.file-input {
-  display: none; }
+input[type="file"] {
+  display: none !important; }
 
 /* Dropdown Button */
 .dropbtn {

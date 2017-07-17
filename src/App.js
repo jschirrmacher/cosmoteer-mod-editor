@@ -83,31 +83,19 @@ class App extends Component {
         })
     }
 
-    userAddNewPart(event) {
-        let id = event.target.id
-        let that = this
-        fetch('/mods/getNeededPartData/' + id)
-            .then(res => res.json())
-            .then(response => {
-                that.setState({
-                    newPartData: response
-                })
-            })
-            .catch(error => alert(error))
-    }
-
     render() {
         return <div className="App">
             <div className="App-header">
                 <img src="https://cosmoteer.net/site_images/logo.png" className="App-logo" alt="logo" />
                 <h2>Mod Editor</h2>
             </div>
-            <ul className="App-intro">
+            <ul className="ModList">
                 {this.state.mods.length
-                    ? this.state.mods.map((row) => <Row key={row.id} data={row} selected={this.state.selectedRow === row.id}
-                        newPartData = {this.state.newPartData}
-                        rowChanged={v => this.rowChanged(v)} onUserClick={() => this.rowSelected(row.id)}
-                        requestDataAboutNewPart={event => this.userAddNewPart(event)}/>)
+                    ? this.state.mods.map((row) => <Row key={row.id} data={row}
+                        selected={this.state.selectedRow === row.id}
+                        rowChanged={v => this.rowChanged(v)}
+                        onUserClick={() => this.rowSelected(row.id)}
+                        />)
                     : 'No Mods found'
                 }
             </ul>

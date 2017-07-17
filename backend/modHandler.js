@@ -147,7 +147,10 @@ module.exports = {
     addPartProtoype: (req,res) => {
         switch(req.params.id){
             case 'addShipLibrary':
-                res.json([{id: 'dirName', text: 'Name of directory', type: 'string'}, {id:'nameKey', text: 'Namekey of ship library', type: 'string'}])
+                res.json([
+                    {id: 'dirName', text: 'Name of directory', type: 'string'},
+                    {id: 'nameKey', text: 'Namekey of ship library', type: 'string'}
+                ])
                 break
             default:
                 res.json({error:'This type is not supported!'})

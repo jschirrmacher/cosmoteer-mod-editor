@@ -1,6 +1,8 @@
-import React, { Component } from 'react' // eslint-disable-line no-unused-vars
+/*eslint-env node*/
+import React, { Component } from 'react'               // eslint-disable-line no-unused-vars
 import './ModRow.css'
 import TextareaAutosize from 'react-autosize-textarea' // eslint-disable-line no-unused-vars
+import PartEditor from './PartEditor'                  // eslint-disable-line no-unused-vars
 
 class ModRow extends Component {
 
@@ -40,10 +42,6 @@ class ModRow extends Component {
 
     }
 
-    createNewPart() {
-
-    }
-
     render() {
         function getDescription(data) {
             return {__html: data.description.replace(/\\n/g,"\n")}
@@ -54,37 +52,6 @@ class ModRow extends Component {
                 onChange={e => this.changed(e)}
                 value={this.props.data.description.replace(/\\n/g,'\n')} /> :
             <span className="description" dangerouslySetInnerHTML={getDescription(this.props.data)} />
-
-        let userChoices
-
-        if(this.props.newPartData) {
-            userChoices = this.props.newPartData.map((userInput) => {
-                switch(userInput.type){
-                    case 'string':
-                        return (<div>
-                            <p>{userInput.text}</p>
-                            <input type="text" name = {userInput.id}/>
-                        </div>)
-                    default:
-                        return ''
-                }
-            })
-            userChoices = <div>{userChoices} <button onClick={() => this.createNewPart()}> Create </button> </div>
-        }
-        else userChoices = ''
-
-        let modEditor = this.props.selected ?
-            <div className = "modPartEditor ">
-                <hr/>
-                <p>To Show</p>
-                <div className="dropdown">
-                    <button className="dropbtn">Add new Part</button>
-                    <div className="dropdown-content">
-                        <a id="addShipLibrary" onClick={e => this.props.requestDataAboutNewPart(e)}>Add Ship Library</a>
-                    </div>
-                </div>
-            {userChoices}
-            </div> : ''
 
         return (
             <li onClick = {() => this.props.onUserClick()}>
@@ -102,7 +69,7 @@ class ModRow extends Component {
                     <input type="text" name="version" value={this.props.data.version} onChange={e => this.changed(e)} />
                     {description}
                 </div>
-            {modEditor}
+                {this.props.selected ? <PartEditor /> : ''}
             </li>
         )
     }

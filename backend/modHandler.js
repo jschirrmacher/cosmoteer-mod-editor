@@ -1,3 +1,4 @@
+/*eslint-env node*/
 'use strict'
 
 const fs = require('fs')
@@ -5,6 +6,7 @@ const path = require('path')
 const parser = require('./parseFile')
 const glob = require('glob')
 const stripJs = require('strip-js')
+const winston = require('winston')
 
 let mods = []
 
@@ -21,11 +23,11 @@ function readModFile(modId, dir = '/mods/', test = false) {
             //Add mod id
             modData.id = modId
             if(!test){
-                console.log('New mod id: ' + modId)
+                winston.log('New mod id: ' + modId)
                 mods.push(modData)
             }
         } catch(e){
-            if(!test) console.log('Did not find mod file: ' + modId + e)
+            if(!test) winston.log('Did not find mod file: ' + modId + e)
             return false
         }
     }
@@ -64,7 +66,7 @@ module.exports = {
             res.json({
                 mods: files.map(file => {
                     let mod = Object.assign({},readModFile(file.replace(/mods\/(.*?)\/mod.txt/, '$1')))
-                    if(!mod) {console.log('This mod failed to load. Is the mod.txt correct? '); return null}
+                    if(!mod) {winston.log('This mod failed to load. Is the mod.txt correct? '); return null}
                     if(mod.name !== undefined) mod.logo = '/mods/' + mod.id + '/media/' + mod.logo
                     return mod
                 }).filter(mod => mod)
@@ -82,12 +84,12 @@ module.exports = {
 
     createMod: (req,res) => {
         if(readModFile(req.body.id)) {
-            console.log('Project already exits!')
+            winston.log('Project already exits!')
             res.json({error:'A mod with this ID already exists!'})
             return
         }
         const dPath = path.join(__dirname, 'mods', req.body.id)
-        fs.mkdirSync(dPath);
+        fs.mkdirSync(dPath)
         //Create Text
         let txt = ''
         let rules = JSON.parse(fs.readFileSync('./templates/mod.json','utf8'))
@@ -104,7 +106,7 @@ module.exports = {
                     }
                     break
                 default:
-                    console.log('An unknown type of line was trying to be inserted into a new mod: ' + line.typ)
+                    winston.log('An unknown type of line was trying to be inserted into a new mod: ' + line.typ)
             }
         })
         //Create mod.txt and laod it into the mods via readModFile()
@@ -127,17 +129,17 @@ module.exports = {
                 //Change the mod in mods
                 mods.forEach(mod => {
                     if (mod.id === req.params.mod) {
-                        console.log('Uploaded picture to mod: ' + mod.id)
+                        winston.log('Uploaded picture to mod: ' + mod.id)
                         mod.logo = fileName
                         saveModFile(mod)
-                    } else{ console.log('Wrong mod: ' + mod.id + ' Wants: ' + req.params.mod)}
+                    } else{ winston.log('Wrong mod: ' + mod.id + ' Wants: ' + req.params.mod)}
                 })
                 //Send back new logo path
                 res.json('mods/' + modName + '/media/' + fileName)
             })
             req.pipe(req.busboy)
         } else{
-            console.log('req.busboy was not added to the picture upload!')
+            winston.log('req.busboy was not added to the picture upload!')
             res.json('Error!')
         }
     },
@@ -145,7 +147,7 @@ module.exports = {
     addPartProtoype: (req,res) => {
         switch(req.params.id){
             case 'addShipLibrary':
-                res.json([{id: 'dirName', text: 'Name of directory', type: 'string'}, {id:"nameKey", text: 'Namekey of ship library', type: 'string'}])
+                res.json([{id: 'dirName', text: 'Name of directory', type: 'string'}, {id:'nameKey', text: 'Namekey of ship library', type: 'string'}])
                 break
             default:
                 res.json({error:'This type is not supported!'})
@@ -155,7 +157,7 @@ module.exports = {
 
     updateMod: (req, res) => {
         let toUpdate
-        if(toUpdate = readModFile(req.params.mod)){
+        if ((toUpdate = readModFile(req.params.mod))) {
             toUpdate.name = req.body.name
             toUpdate.version = req.body.version
             toUpdate.author = req.body.author

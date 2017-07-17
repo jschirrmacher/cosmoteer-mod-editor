@@ -7,15 +7,21 @@
 
 const express = require('express')
 const modHandler = require('./modHandler')
-const bodyParser = require("body-parser")
-const busboy = require("connect-busboy")
+const bodyParser = require('body-parser')
+const busboy = require('connect-busboy')
+const winston = require('winston')
+const expressWinston = require('express-winston')
 
 const app = express()
 
-app.use((req, res, next) => {
-    console.log(req.method + ' ' + req.path)
-    next()
-})
+winston.level = process.env.LOG_LEVEL || 'info'
+winston.remove(winston.transports.Console)
+winston.add(winston.transports.Console, {timestamp:true})
+
+app.enable('trust proxy')
+app.use(expressWinston.logger({
+    transports: [new winston.transports.Console({ timestamp: true })]
+}))
 
 app.use(busboy())
 app.use(bodyParser.json())
@@ -29,8 +35,8 @@ app.use((req, res, next) => {
     next()
 })
 
-app.post("/mods", modHandler.createMod)
-app.post("/mods/upload/picture/:mod", modHandler.uploadPicture)
+app.post('/mods', modHandler.createMod)
+app.post('/mods/upload/picture/:mod', modHandler.uploadPicture)
 
 app.put('/mods/:mod', modHandler.updateMod)
 
@@ -39,4 +45,4 @@ app.get('/mods/:mod/media/:file', modHandler.getMediaFile)
 app.get('/mods/getNeededPartData/:id', modHandler.addPartProtoype)
 
 app.listen(3001)
-console.log('Server running')
+winston.log('Server running')

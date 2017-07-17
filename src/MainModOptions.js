@@ -3,7 +3,25 @@
  */
 import React, { Component } from 'react'               // eslint-disable-line no-unused-vars
 
-class ShipLibraryEditForm extends Component {
+class MainModOptions extends Component {
+
+    componentWillMount(){
+        fetch('/mods/mainModData/' + this.props.modId)
+            .then(res => res.json())
+            .then(result => {
+                let dataR = {}
+                for(let rObj in result){
+                    for(let r in result[rObj]){
+                        if(result[rObj].hasOwnProperty(r)){
+                            dataR[r] = result[rObj][r]
+                        }
+                    }
+                }
+                this.setState({data: dataR})
+            })
+            .catch(e => alert(e))
+    }
+
     change(e) {
         let value = e.target.value
         let name = e.target.name
@@ -23,11 +41,11 @@ class ShipLibraryEditForm extends Component {
 
 
     render() {
-        if(this.state === undefined) this.setState({data: this.props.getData()})
         return (
             <div>
                 <form>
                     <p>Mod Options</p>
+                    <label>Strings Folder for Language Files</label>
                     <input type="text" name="stringsfolder" placeholder="Folder for languages" value ={this.state ? this.state.data.stringsfolder : ''}
                         onChange={event => this.change(event)} />
                     <button onClick={(e) => this.upload(e)}>{'Save changes'}</button>
@@ -37,4 +55,4 @@ class ShipLibraryEditForm extends Component {
     }
 }
 
-export default ShipLibraryEditForm
+export default MainModOptions

@@ -162,33 +162,54 @@ module.exports = {
     },
 
     mainModData: (req, res) => {
+        let found = false
         const needed = ['stringsfolder']
         mods.forEach(mod => {
             if(mod.id === req.params.mod) {
+                found = true
                 let data = []
                 needed.forEach(part => {
-                    if (mod[part] !== undefined) data.push({part: mod[part]})
-                    else data.push({part: ''})
+                    let obj = {}
+                    if (mod[part] !== undefined) obj[part] = mod[part]
+                    else obj[part] = ''
+                    data.push(obj)
                 })
                 res.json(data)
             }
         })
-        res.json({error: "Did not find mod!"})
+        if(!found)res.json({error: "Did not find mod!"})
     },
 
     changeMainModData: (req, res) => {
         let found = false
         mods.forEach(mod => {
-            if(mod == req.params.mod){
+            if(mod.id == req.params.mod) {
+                switch(req.params.id){
+                    case 'stringsfolder':
+                        if(mod[req.params.id] !== undefined){
+                            fs.renameSync(path.join(__dirname, 'mods', req.params.mod, mod[req.params.id]),
+                                path.join(__dirname, 'mods', req.params.mod, req.params.value))
+                        } else{
+                            fs.mkdirSync(path.join(__dirname, 'mods', req.params.mod, req.params.value))
+                        }
+                        break
+                    default:
+                        winston.error('The following id is not defiend as a mod.txt option: ' + req.params.id)
+                }
+                winston.error(mod)
                 mod[req.params.id] = req.params.value
-                winston.log('Debug', mod)
-                mod.ignore.toAdd.filter(thing => !(thing === req.params.id))
+                if(mod.ignore !== undefined){
+                    mod.ignore.toAdd = mod.ignore.toAdd.forEach(needed => {
+                        if(!needed === req.params.id) needed
+                    })
+                }
                 res.json('OK')
                 found = true
+                saveModFile(mod)
             }
         })
         if(!found){
-            winston.log('Debug', 'Did not find mod + ' + req.params.mod)
+            winston.log('debug', 'Did not find mod + ' + req.params.mod)
             res.json('ERROR')
         }
     }

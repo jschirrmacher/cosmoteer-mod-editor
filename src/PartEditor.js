@@ -7,15 +7,6 @@ class PartEditor extends Component {
         this.setState({action: select[select.selectedIndex].value})
     }
 
-    getMainModData() {
-        fetch('/mods/mainModData/' + this.props.modId)
-            .then(res => res.json())
-            .then(result => {
-                return result
-            })
-            .catch(e => alert(e))
-    }
-
     render() {
         let action = (
             <select onChange={e => this.selectAction(e.target)}>
@@ -38,7 +29,7 @@ class PartEditor extends Component {
         return (
             <div>
                 <ul>
-                    <li className = "ModList"><MainModOptions modId ={this.props.modId} getData={() => this.getMainModData()}/></li>
+                    <li className = "ModList"><MainModOptions modId ={this.props.modId} /></li>
                     <li>Another part</li>
                 </ul>
                 {action}

@@ -69,7 +69,7 @@ class ModRow extends Component {
                     <input type="text" name="version" value={this.props.data.version} onChange={e => this.changed(e)} />
                     {description}
                 </div>
-                {this.props.selected ? <PartEditor /> : ''}
+                {this.props.selected ? <PartEditor modId = {this.props.data.id}/> : ''}
             </li>
         )
     }

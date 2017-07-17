@@ -10,7 +10,7 @@ const newRules = require('./rules')
 
 function throwError(errorMessage, additionalData = []){
     additionalData.forEach(data => {
-        winston.log(data.toString())    //eslint-disable-line no-console
+        winston.log('error', data.toString())    //eslint-disable-line no-console
     })
     throw errorMessage
 }
@@ -38,8 +38,8 @@ exports.readNewFile = (fileName, test = false) => {
         }
     } catch (e) {
         if(!test) {
-            winston.log('Error --------------------') //eslint-disable-line no-console
-            winston.log('Error in file: ' + fileName) //eslint-disable-line no-console
+            winston.log('error','Error --------------------') //eslint-disable-line no-console
+            winston.log('error','Error in file: ' + fileName) //eslint-disable-line no-console
         }
         throw e
     }

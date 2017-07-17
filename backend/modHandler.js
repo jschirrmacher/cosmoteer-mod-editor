@@ -66,7 +66,7 @@ module.exports = {
             res.json({
                 mods: files.map(file => {
                     let mod = Object.assign({},readModFile(file.replace(/mods\/(.*?)\/mod.txt/, '$1')))
-                    if(!mod) {winston.log('This mod failed to load. Is the mod.txt correct? '); return null}
+                    if(!mod) {winston.log('error', 'This mod failed to load. Is the mod.txt correct? '); return null}
                     if(mod.name !== undefined) mod.logo = '/mods/' + mod.id + '/media/' + mod.logo
                     return mod
                 }).filter(mod => mod)
@@ -84,7 +84,7 @@ module.exports = {
 
     createMod: (req,res) => {
         if(readModFile(req.body.id)) {
-            winston.log('Project already exits!')
+            winston.log('debug','Project already exits!')
             res.json({error:'A mod with this ID already exists!'})
             return
         }
@@ -106,7 +106,7 @@ module.exports = {
                     }
                     break
                 default:
-                    winston.log('An unknown type of line was trying to be inserted into a new mod: ' + line.typ)
+                    winston.log('error', 'An unknown type of line was trying to be inserted into a new mod: ' + line.typ)
             }
         })
         //Create mod.txt and laod it into the mods via readModFile()
@@ -129,32 +129,18 @@ module.exports = {
                 //Change the mod in mods
                 mods.forEach(mod => {
                     if (mod.id === req.params.mod) {
-                        winston.log('Uploaded picture to mod: ' + mod.id)
+                        winston.log('info', 'Uploaded picture to mod: ' + mod.id)
                         mod.logo = fileName
                         saveModFile(mod)
-                    } else{ winston.log('Wrong mod: ' + mod.id + ' Wants: ' + req.params.mod)}
+                    }
                 })
                 //Send back new logo path
                 res.json('mods/' + modName + '/media/' + fileName)
             })
             req.pipe(req.busboy)
         } else{
-            winston.log('req.busboy was not added to the picture upload!')
+            winston.log('error', 'req.busboy was not added to the picture upload!')
             res.json('Error!')
-        }
-    },
-
-    addPartProtoype: (req,res) => {
-        switch(req.params.id){
-            case 'addShipLibrary':
-                res.json([
-                    {id: 'dirName', text: 'Name of directory', type: 'string'},
-                    {id: 'nameKey', text: 'Namekey of ship library', type: 'string'}
-                ])
-                break
-            default:
-                res.json({error:'This type is not supported!'})
-                break
         }
     },
 
@@ -172,6 +158,38 @@ module.exports = {
             res.json(saveModFile(toUpdate))
         }else{
             res.json({error: 'Mod has not been found!'})
+        }
+    },
+
+    mainModData: (req, res) => {
+        const needed = ["stringsfolder"]
+        mods.forEach(mod => {
+            if(mod.id === req.params.mod) {
+                let data = []
+                needed.forEach(part => {
+                    if (mod[part] !== undefined) data.push({part: mod[part]})
+                    else data.push({part: ""})
+                })
+                res.json(data)
+            }
+        })
+        res.json({error: "Did not find mod!"})
+    },
+
+    changeMainModData: (req, res) => {
+        let found = false
+        mods.forEach(mod => {
+            if(mod == req.params.mod){
+                mod[req.params.id] = req.params.value
+                winston.log('Debug', mod)
+                mod.ignore.toAdd.filter(thing => !(thing === req.params.id))
+                res.json('OK')
+                found = true
+            }
+        })
+        if(!found){
+            winston.log('Debug', 'Did not find mod + ' + req.params.mod)
+            res.json('ERROR')
         }
     }
 }

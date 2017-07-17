@@ -19,6 +19,7 @@ winston.remove(winston.transports.Console)
 winston.add(winston.transports.Console, {timestamp:true})
 
 app.enable('trust proxy')
+
 app.use(expressWinston.logger({
     transports: [new winston.transports.Console({ timestamp: true })],
     meta: false
@@ -38,12 +39,13 @@ app.use((req, res, next) => {
 
 app.post('/mods', modHandler.createMod)
 app.post('/mods/upload/picture/:mod', modHandler.uploadPicture)
+app.post('/mods/mainModData/:mod/:id/:value', modHandler.changeMainModData)
 
 app.put('/mods/:mod', modHandler.updateMod)
 
 app.get('/mods', modHandler.listMods)
 app.get('/mods/:mod/media/:file', modHandler.getMediaFile)
-app.get('/mods/getNeededPartData/:id', modHandler.addPartProtoype)
+app.get('/mods/mainModData/:mod', modHandler.mainModData)
 
 app.listen(3001)
-winston.log('Server running')
+winston.log('info', 'Server running')

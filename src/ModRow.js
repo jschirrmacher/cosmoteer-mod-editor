@@ -27,19 +27,18 @@ class ModRow extends Component {
         fetch('/mods/upload/picture/' + this.props.data.id,{  method: 'POST',
             body: new FormData(input.parentNode.parentNode)
         })
-        .then(res => res.json())
-        .then(response => {
-            if (response.error) {
-                throw response.error
-            }
-            let value = this.props.data
-            value.logo = response
-            this.props.rowChanged(value)
-        })
-        .catch(error => alert(error))
+            .then(res => res.json())
+            .then(response => {
+                if (response.error) {
+                    throw response.error
+                }
+                let value = this.props.data
+                value.logo = response
+                this.props.rowChanged(value)
+            })
+            .catch(error => alert(error))
 
     }
-
 
     render() {
         function getDescription(data) {
@@ -49,14 +48,31 @@ class ModRow extends Component {
         let description = this.props.selected ?
             <TextareaAutosize className="description" name="description"
                 onChange={e => this.changed(e)}
-                value={this.props.data.description.replace(/\\n/g,"\n")} /> :
+                value={this.props.data.description.replace(/\\n/g,'\n')} /> :
             <span className="description" dangerouslySetInnerHTML={getDescription(this.props.data)} />
 
         let modEditor = this.props.selected ?
             <div className = "modPartEditor ">
                 <hr/>
                 <p>To Show</p>
-            </div> : ""
+                <div className="dropdown">
+                    <button className="dropbtn">Add new Part</button>
+                    <div className="dropdown-content">
+                        <a id="addShipLibrary" onClick={e => this.props.requestDataAboutNewPart(e)}>Add Ship Library</a>
+                    </div>
+                </div>
+                {this.props.newPartData ? this.props.newPartData.map((userInput) => {
+                    switch(userInput.type){
+                        case "string":
+                            return (<div>
+                                <p>{userInput.text}</p>
+                            <input type="text" name = {userInput.id}/>
+                                </div>)
+                        default:
+                            return ''
+                    }
+                }) : ''}
+            </div> : ''
 
         return (
             <li onClick = {() => this.props.onUserClick()}>

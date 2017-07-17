@@ -83,45 +83,58 @@ class App extends Component {
         })
     }
 
+    userAddNewPart(event) {
+        let id = event.target.id
+        let that = this
+        fetch('/mods/getNeededPartData/' + id)
+            .then(res => res.json())
+            .then(response => {
+                that.setState({
+                    newPartData: response
+                })
+            })
+            .catch(error => alert(error))
+    }
+
     render() {
-        return (
-            <div className="App">
-                <div className="App-header">
-                    <img src="https://cosmoteer.net/site_images/logo.png" className="App-logo" alt="logo" />
-                    <h2>Mod Editor</h2>
-                </div>
-                <ul className="App-intro">
+        return <div className="App">
+            <div className="App-header">
+                <img src="https://cosmoteer.net/site_images/logo.png" className="App-logo" alt="logo" />
+                <h2>Mod Editor</h2>
+            </div>
+            <ul className="App-intro">
                 {this.state.mods.length
                     ? this.state.mods.map((row) => <Row key={row.id} data={row} selected={this.state.selectedRow === row.id}
-                    rowChanged={v => this.rowChanged(v)} onUserClick={() => this.rowSelected(row.id)}/>)
+                        newPartData = {this.state.newPartData}
+                        rowChanged={v => this.rowChanged(v)} onUserClick={() => this.rowSelected(row.id)}
+                        requestDataAboutNewPart={event => this.userAddNewPart(event)}/>)
                     : 'No Mods found'
                 }
-                </ul>
-                <div className="addMod">
-                    <img className="addModImage" src="/mods/x/media/logo.png" alt="" />
-                    <form className="addModForm" onSubmit={(event) => this.handleSubmit(event)}>
-                        <div className="newModDiv" id="newModID">
-                            Mod ID:
-                            <input className="newModInput" type="text" name="id" onChange={(event) => this.handleInputChange(event)}/>
-                        </div>
-                        <div className="newModDiv" id="newModName">
-                            Name:
-                            <input className="newModInput" type="text" name="name" onChange={(event) => this.handleInputChange(event)}/>
-                        </div>
-                        <div className="newModDiv" id="newModAuthor">
-                            Author:
-                            <input className="newModInput" type="text" name="author" onChange={(event) => this.handleInputChange(event)}/>
-                        </div>
-                        <div className="newModDiv" id="newModVersion">
-                            Version: <input className="newModInput" type="text" name="version" onChange={(event) => this.handleInputChange(event)}/>
-                        </div>
-                        <input className="newModSubmit" type="submit" value="Create Mod"/>
-                    </form>
-                    {this.state.newModData.hasError ? <p id="newModError">{this.state.newModData.message}</p> : ''}
-                </div>
+            </ul>
+            <div className="addMod">
+                <img className="addModImage" src="/mods/x/media/logo.png" alt="" />
+                <form className="addModForm" onSubmit={(event) => this.handleSubmit(event)}>
+                    <div className="newModDiv" id="newModID">
+                        Mod ID:
+                        <input className="newModInput" type="text" name="id" onChange={(event) => this.handleInputChange(event)}/>
+                    </div>
+                    <div className="newModDiv" id="newModName">
+                        Name:
+                        <input className="newModInput" type="text" name="name" onChange={(event) => this.handleInputChange(event)}/>
+                    </div>
+                    <div className="newModDiv" id="newModAuthor">
+                        Author:
+                        <input className="newModInput" type="text" name="author" onChange={(event) => this.handleInputChange(event)}/>
+                    </div>
+                    <div className="newModDiv" id="newModVersion">
+                        Version:
+                        <input className="newModInput" type="text" name="version" onChange={(event) => this.handleInputChange(event)}/>
+                    </div>
+                    <input className="newModSubmit" type="submit" value="Create Mod"/>
+                </form>
+                {this.state.newModData.hasError ? <p id="newModError">{this.state.newModData.message}</p> : ''}
             </div>
-
-        )
+        </div>
     }
 }
 

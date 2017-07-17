@@ -1,1 +1,1 @@
-description = "this\n may \n fail"
+description = "this may \n fail"

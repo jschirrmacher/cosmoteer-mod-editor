@@ -36,6 +36,7 @@ app.put('/mods/:mod', modHandler.updateMod)
 
 app.get('/mods', modHandler.listMods)
 app.get('/mods/:mod/media/:file', modHandler.getMediaFile)
+app.get('/mods/getNeededPartData/:id', modHandler.addPartProtoype)
 
 app.listen(3001)
 console.log('Server running')

@@ -40,6 +40,10 @@ class ModRow extends Component {
 
     }
 
+    createNewPart() {
+
+    }
+
     render() {
         function getDescription(data) {
             return {__html: data.description.replace(/\\n/g,"\n")}
@@ -51,6 +55,24 @@ class ModRow extends Component {
                 value={this.props.data.description.replace(/\\n/g,'\n')} /> :
             <span className="description" dangerouslySetInnerHTML={getDescription(this.props.data)} />
 
+        let userChoices
+
+        if(this.props.newPartData) {
+            userChoices = this.props.newPartData.map((userInput) => {
+                switch(userInput.type){
+                    case 'string':
+                        return (<div>
+                            <p>{userInput.text}</p>
+                            <input type="text" name = {userInput.id}/>
+                        </div>)
+                    default:
+                        return ''
+                }
+            })
+            userChoices = <div>{userChoices} <button onClick={() => this.createNewPart()}> Create </button> </div>
+        }
+        else userChoices = ''
+
         let modEditor = this.props.selected ?
             <div className = "modPartEditor ">
                 <hr/>
@@ -61,17 +83,7 @@ class ModRow extends Component {
                         <a id="addShipLibrary" onClick={e => this.props.requestDataAboutNewPart(e)}>Add Ship Library</a>
                     </div>
                 </div>
-                {this.props.newPartData ? this.props.newPartData.map((userInput) => {
-                    switch(userInput.type){
-                        case "string":
-                            return (<div>
-                                <p>{userInput.text}</p>
-                            <input type="text" name = {userInput.id}/>
-                                </div>)
-                        default:
-                            return ''
-                    }
-                }) : ''}
+            {userChoices}
             </div> : ''
 
         return (

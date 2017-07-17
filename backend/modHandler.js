@@ -155,6 +155,10 @@ module.exports = {
         }
     },
 
+    addPartForReal: (req, res) => {
+        res.send(200)
+    },
+
     updateMod: (req, res) => {
         let toUpdate
         if ((toUpdate = readModFile(req.params.mod))) {

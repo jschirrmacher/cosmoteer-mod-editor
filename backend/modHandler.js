@@ -72,13 +72,13 @@ module.exports = {
         })
     },
     getMediaFile: (req, res) => {
-    let file = path.join(__dirname, 'mods', req.params.mod, req.params.file)
-    if (fs.existsSync(file)) {
-        res.sendFile(file)
-    } else {
-        res.sendFile(path.join(__dirname, 'plug.png'))
-    }
-},
+        let file = path.join(__dirname, 'mods', req.params.mod, req.params.file)
+        if (fs.existsSync(file)) {
+            res.sendFile(file)
+        } else {
+            res.sendFile(path.join(__dirname, 'plug.png'))
+        }
+    },
 
     createMod: (req,res) => {
         if(readModFile(req.body.id)) {

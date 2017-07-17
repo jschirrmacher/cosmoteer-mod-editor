@@ -73,6 +73,7 @@ module.exports = {
             })
         })
     },
+
     getMediaFile: (req, res) => {
         let file = path.join(__dirname, 'mods', req.params.mod, req.params.file)
         if (fs.existsSync(file)) {
@@ -144,10 +145,6 @@ module.exports = {
         }
     },
 
-    addPartForReal: (req, res) => {
-        res.send(200)
-    },
-
     updateMod: (req, res) => {
         let toUpdate
         if ((toUpdate = readModFile(req.params.mod))) {
@@ -212,5 +209,20 @@ module.exports = {
             winston.log('debug', 'Did not find mod + ' + req.params.mod)
             res.json('ERROR')
         }
+    },
+
+    createPart: (req, res) => {
+        fs.mkdirSync(path.join(__dirname, 'mods', req.params.mod, req.body.dirName), '0755')
+        let mod = readModFile(req.params.mod)
+        if (!mod.shiplibraries) {
+            mod.shiplibraries = []
+        }
+        mod.shiplibraries.push({folder: req.body.dirName, namekey: req.body.titleId})
+        res.json(saveModFile(mod))
+        res.json(req.body)
+    },
+
+    updatePart: (req, res) => {
+        res.json(req.body)
     }
 }

@@ -43,6 +43,9 @@ app.post('/mods/mainModData/:mod/:id/:value', modHandler.changeMainModData)
 
 app.put('/mods/:mod', modHandler.updateMod)
 
+app.post('/mods/:mod/parts/:type', modHandler.createPart)
+app.put('/mods/:mod/parts/:type', modHandler.updatePart)
+
 app.get('/mods', modHandler.listMods)
 app.get('/mods/:mod/media/:file', modHandler.getMediaFile)
 app.get('/mods/mainModData/:mod', modHandler.mainModData)

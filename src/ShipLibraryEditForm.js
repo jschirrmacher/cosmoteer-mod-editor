@@ -1,9 +1,19 @@
 import React, { Component } from 'react'               // eslint-disable-line no-unused-vars
 
 class ShipLibraryEditForm extends Component {
+    save(event) {
+        event.preventDefault()
+        this.props.saveComponent({
+            create: this.props.create,
+            type: 'shipLibrary',
+            dirName: event.target.elements.dirname.value,
+            titleId: event.target.elements.titleID.value
+        })
+    }
+
     render() {
         return (
-            <form>
+            <form onSubmit={e => this.save(e)}>
                 <label><span>Directory name</span>
                     <input type="text" name="dirname" value={this.props.dirname} /></label>
                 <label><span>ID of library title text</span>

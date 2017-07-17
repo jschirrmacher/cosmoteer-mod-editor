@@ -42,6 +42,19 @@ class ModRow extends Component {
 
     }
 
+    saveComponent(data) {
+        let uri = '/mods/' + this.props.data.id + '/parts/' + data.type
+        let method = data.create ? 'POST' : 'PUT'
+        delete data.type
+        delete data.create
+        fetch(uri, {method, body: JSON.stringify(data), headers: {'Content-Type': 'application/json'}})
+            .then(res => res.json())
+            .then(result => {
+                alert(result)
+            })
+            .catch(e => alert(e))
+    }
+
     render() {
         function getDescription(data) {
             return {__html: data.description.replace(/\\n/g,'\n')}
@@ -69,7 +82,10 @@ class ModRow extends Component {
                     <input type="text" name="version" value={this.props.data.version} onChange={e => this.changed(e)} />
                     {description}
                 </div>
-                {this.props.selected ? <PartEditor modId = {this.props.data.id}/> : ''}
+                {this.props.selected ?
+                    <PartEditor modId={this.props.data.id} saveComponent={data => this.saveComponent(data)} /> :
+                    ''
+                }
             </li>
         )
     }

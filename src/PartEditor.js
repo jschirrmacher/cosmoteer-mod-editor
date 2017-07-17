@@ -18,10 +18,10 @@ class PartEditor extends Component {
         if (this.state) {
             switch (this.state.action) {
                 case 'createShipLibrary':
-                    action = <ShipLibraryEditForm create={true} />
+                    action = <ShipLibraryEditForm create={true} saveComponent={data => this.props.saveComponent(data)} />
                     break
                 default:
-                    console.log("This is not supported: " + this.state.action)
+                    console.log('This action is not supported: ' + this.state.action)
                     break
             }
         }

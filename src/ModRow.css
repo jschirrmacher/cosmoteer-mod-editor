@@ -4,14 +4,14 @@
   padding: 10px 10px 10px 100px;
   min-height: 80px;
   margin: 0 10px; }
-  .ModList > li img {
+  .ModList > li .modTitleContainer img {
     position: absolute;
     left: 20px;
     width: 80px;
     height: 80px; }
-  .ModList > li input[name='title'] {
+  .ModList > li .modTitleContainer input[name='title'] {
     font-size: 120%; }
-  .ModList > li .description {
+  .ModList > li .modTitleContainer .description {
     display: block;
     width: 100%;
     font-size: 90%;
@@ -20,12 +20,12 @@
     line-height: 1;
     margin-top: 1em;
     font-family: sans-serif; }
-    .ModList > li .description green {
+    .ModList > li .modTitleContainer .description green {
       color: green; }
-  .ModList > li textarea.description {
+  .ModList > li .modTitleContainer textarea.description {
     min-height: 50px;
     border: none; }
-  .ModList > li input {
+  .ModList > li .modTitleContainer input {
     display: block;
     width: 100%;
     font-size: 100%;
@@ -33,6 +33,12 @@
 
 input[type="file"] {
   display: none !important; }
+
+label {
+  display: block; }
+  label span {
+    width: 150px;
+    display: inline-block; }
 
 /* Dropdown Button */
 .dropbtn {

@@ -4,8 +4,10 @@ class ShipLibraryEditForm extends Component {
     render() {
         return (
             <form>
-                <input type="text" name="dirname" placeholder="Directory name" value={this.props.dirname} />
-                <input type="text" name="titleID" placeholder="ID of library title text" value={this.props.title} />
+                <label><span>Directory name</span>
+                    <input type="text" name="dirname" value={this.props.dirname} /></label>
+                <label><span>ID of library title text</span>
+                    <input type="text" name="titleID" value={this.props.title} /></label>
                 <button>{this.props.create ? 'Create ship library' : 'Save changes'}</button>
             </form>
         )

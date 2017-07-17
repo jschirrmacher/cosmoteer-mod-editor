@@ -5,47 +5,57 @@
   min-height: 80px;
   margin: 0 10px;
 
-  img {
-    position: absolute;
-    left: 20px;
-    width: 80px;
-    height: 80px;
-  }
-
-  input[name='title'] {
-    font-size: 120%;
-  }
-
-  .description {
-    display: block; width: 100%;
-    font-size: 90%;
-    clear: both;
-    white-space: pre;
-    line-height: 1;
-    margin-top: 1em;
-    font-family: sans-serif;
-
-
-    green {
-      color: green;
+  .modTitleContainer {
+    img {
+      position: absolute;
+      left: 20px;
+      width: 80px;
+      height: 80px;
     }
-  }
 
-  textarea.description {
-    min-height: 50px;
-    border: none;
-  }
+    input[name='title'] {
+      font-size: 120%;
+    }
 
-  input {
-    display: block;
-    width: 100%;
-    font-size: 100%;
-    border: none;
+    .description {
+      display: block; width: 100%;
+      font-size: 90%;
+      clear: both;
+      white-space: pre;
+      line-height: 1;
+      margin-top: 1em;
+      font-family: sans-serif;
+
+      green {
+        color: green;
+      }
+    }
+
+    textarea.description {
+      min-height: 50px;
+      border: none;
+    }
+
+    input {
+      display: block;
+      width: 100%;
+      font-size: 100%;
+      border: none;
+    }
   }
 }
 
 input[type="file"] {
   display: none !important;
+}
+
+label {
+  display: block;
+
+  span {
+    width: 150px;
+    display: inline-block;
+  }
 }
 
 /* Dropdown Button */

@@ -38,6 +38,37 @@ function saveModFile(mod) {
     return mod
 }
 
+function updateShipLibrary(modId, dirName, titleId) {
+    fs.mkdirSync(path.join(__dirname, 'mods', modId, dirName), '0755')
+    if (!readModFile(modId)) {
+        return {error: 'Mod not found'}
+    } else {
+        if (!mods[modId].shiplibraries) {
+            mods[modId].shiplibraries = []
+        }
+        mods[modId].shiplibraries.push({folder: dirName, namekey: titleId})
+        mods[modId].ignore.keyWords.push(titleId)
+        return mods[modId]
+    }
+}
+
+function updateLanguage(modId, lang) {
+    if (!readModFile(modId)) {
+        return {error: 'Mod not found!'}
+    } else if (!iso.validate(lang)) {
+        return {error: lang + ' is not a valid language code!'}
+    } else if (mods[modId].ignore.languages && mods[modId].ignore.languages.indexOf(lang) >= 0) {
+        return {error: 'This language file has already been created!'}
+    } else if (!mods[modId].stringsfolder) {
+        return {error: 'This mod does not have a Strings folder. Please define this first in the main mod options.'}
+    } else {
+        fs.writeFileSync(path.join(__dirname, 'mods', modId, mods[modId].stringsfolder, lang + '.txt'), '')
+        mods[modId].ignore.languages.push({id: lang, keywords: []})
+        saveModFile(mods[modId])
+        return mods[modId]
+    }
+}
+
 module.exports = {
     readModFile,
 
@@ -175,46 +206,15 @@ module.exports = {
     },
 
     createPart: (req, res) => {
-        switch(req.params.type){
-            case 'shipLibrary': {
-                fs.mkdirSync(path.join(__dirname, 'mods', req.params.mod, req.body.dirName), '0755')
-                if (!readModFile(req.params.mod)) {
-                    res.json({error: 'Mod not found'})
-                } else {
-                    if (!mods[req.params.mod].shiplibraries) {
-                        mods[req.params.mod].shiplibraries = []
-                    }
-                    mods[req.params.mod].shiplibraries.push({folder: req.body.dirName, namekey: req.body.titleId})
-                    mods[req.params.mod].ignore.keyWords.push(req.body.titleId)
-                    res.json(mods[req.params.mod])
-                }
-                mods[req.params.mod].shiplibraries.push({folder: req.body.dirName, namekey: req.body.titleId})
-                res.json(req.body)
-                break
-            }
-            case 'language': {
-                if (!readModFile(req.params.mod)) {
-                    res.json({error: 'Mod not found!'})
-                } else if (!iso.validate(req.body.lang)) {
-                    res.json({error: req.body.lang + ' is not a valid language code!'})
-                } else if (mods[req.params.mod].ignore.languages && mods[req.params.mod].ignore.languages
-                        .indexOf(req.body.lang) >= 0) {
-                    res.json({error: 'This language file has already been created!'})
-                } else if (!mods[req.params.mod].stringsfolder) {
-                    res.json({error: 'This mod does not have a Strings folder.' +
-                    ' Please define this first in the main mod options.'})
-                } else {
-                    fs.writeFileSync(path.join(__dirname, 'mods', req.params.mod, mods[req.params.mod].stringsfolder,
-                        req.body.lang + '.txt'), '')
-                    mods[req.params.mod].ignore.languages.push({id: req.body.lang, keywords: []})
-                    saveModFile(mods[req.params.mod])
-                    res.json(mods[req.params.mod])
-                }
-                break
-            }
-            default:
-                winston.error('Part of unknown type was trying to be created: '+ req.params.type)
-                res.json({error: 'Unknown type'})
+        let actions = {
+            shipLibrary: () => updateShipLibrary(req.params.mod, req.body.dirName, req.body.titleId),
+            language: () => updateLanguage(req.params.mod, req.body.lang)
+        }
+        try{
+            res.json(actions[req.params.type])
+        } catch (e) {
+            winston.error('Part of unknown type was trying to be created: '+ req.params.type)
+            res.json({error: 'Unknown type'})
         }
     },
 

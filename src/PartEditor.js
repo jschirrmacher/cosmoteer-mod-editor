@@ -1,7 +1,7 @@
 import React, { Component } from 'react'                 // eslint-disable-line no-unused-vars
 import ShipLibraryEditForm from './ShipLibraryEditForm'
 import MainModOptions from './MainModOptions'
-import AddLanguage from './AddLanguage'
+import AddLanguage from './addLanguage'
 import LanguageEditor from './LanguageEditor'
 
 class PartEditor extends Component {

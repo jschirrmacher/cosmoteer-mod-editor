@@ -6,6 +6,7 @@ import React, { Component } from 'react'               // eslint-disable-line no
 class AddLanguage extends Component {
     save(event) {
         event.preventDefault()
+        this.props.reset()
         this.props.saveComponent({
             create: this.props.create,
             type: 'language',

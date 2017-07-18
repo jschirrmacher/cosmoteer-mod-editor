@@ -197,7 +197,8 @@ module.exports = {
                     res.json({error: 'Mod not found!'})
                 } else if (!iso.validate(req.body.lang)) {
                     res.json({error: req.body.lang + ' is not a valid language code!'})
-                } else if (mods[req.params.mod].ignore.languages && mods[req.params.mod].ignore.languages.indexOf(req.body.lang) >= 0) {
+                } else if (mods[req.params.mod].ignore.languages && mods[req.params.mod].ignore.languages
+                        .indexOf(req.body.lang) >= 0) {
                     res.json({error: 'This language file has already been created!'})
                 } else if (!mods[req.params.mod].stringsfolder) {
                     res.json({error: 'This mod does not have a Strings folder.' +

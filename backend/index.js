@@ -49,6 +49,7 @@ app.put('/mods/:mod/parts/:type', modHandler.updatePart)
 app.get('/mods', modHandler.listMods)
 app.get('/mods/:mod/media/:file', modHandler.getMediaFile)
 app.get('/mods/mainModData/:mod', modHandler.mainModData)
+app.get('/mods/Languages/:mod', modHandler.getLanguageOverview)
 
 app.listen(3001)
 winston.log('info', 'Server running')

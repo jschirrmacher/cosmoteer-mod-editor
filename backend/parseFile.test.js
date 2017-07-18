@@ -80,9 +80,9 @@ describe('File Parser', () => {
         done()
     })
 
-    it("should find both languages present in directory", done => {
+    it('should find both languages present in directory', done => {
         let result = parseFile.getLanguages('./Test Files/Languages')
-        result.should.deepEqual(['de', 'en'])
+        result.should.deepEqual([{id: 'de', keywords: []},{id: 'en', keywords: []}])
         done()
     })
 })

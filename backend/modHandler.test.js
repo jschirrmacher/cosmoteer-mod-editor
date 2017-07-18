@@ -14,7 +14,7 @@ describe('Mod Handler', () => {
 
     it('should read in sample mod with languages', done => {
         let result = modHandler.readModFile('S_Mod', '/Test Files/')
-        result.ignore.languages.should.deepEqual(['en'])
+        result.ignore.languages.should.deepEqual([{id:'en', keywords: []}])
         done()
     })
 })

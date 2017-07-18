@@ -31,7 +31,7 @@ exports.getLanguages = (directoryPath) => {
     let files = fs.readdirSync(directoryPath)
     files.forEach(file => {
         var replace = file.replace('.txt', '')
-        if(iso.validate(replace)) langFiles.push(replace)
+        if(iso.validate(replace)) langFiles.push({id: replace, keywords: []})
     })
     return langFiles
 }

@@ -19,7 +19,8 @@ function readModFile(modId, dir = '/mods/', test = false) {
             modData.id = modId
             if (modData.stringsfolder) {
                 modData.ignore.languages = parser.getLanguages(path.join(__dirname, dir, modId, modData.stringsfolder))
-            }
+            } else modData.ignore.languages = []
+            modData.ignore.keyWords = []
             modData.description = stripJs(modData.description)
             if (!test) {
                 mods[modId] = modData
@@ -184,8 +185,11 @@ module.exports = {
                         mods[req.params.mod].shiplibraries = []
                     }
                     mods[req.params.mod].shiplibraries.push({folder: req.body.dirName, namekey: req.body.titleId})
+                    mods[req.params.mod].ignore.keyWords.push(req.body.titleId)
                     res.json(mods[req.params.mod])
                 }
+                mod.shiplibraries.push({folder: req.body.dirName, namekey: req.body.titleId})
+                res.json(req.body)
                 break
             }
             case 'language': {
@@ -201,7 +205,7 @@ module.exports = {
                 } else {
                     fs.writeFileSync(path.join(__dirname, 'mods', req.params.mod, mods[req.params.mod].stringsfolder,
                         req.body.lang + '.txt'), '')
-                    mods[req.params.mod].ignore.languages.push(req.body.lang)
+                    mods[req.params.mod].ignore.languages.push({id: req.body.lang, keywords: []})
                     saveModFile(mods[req.params.mod])
                     res.json(mods[req.params.mod])
                 }
@@ -215,5 +219,13 @@ module.exports = {
 
     updatePart: (req, res) => {
         res.json(req.body)
+    },
+
+    getLanguageOverview: (req, res) => {
+        mods.forEach(mod => {
+            if(mod.id === req.params.mod){
+                res.json({languages: mod.ignore.languages, keywords: mod.ignore.keyWords})
+            }
+        })
     }
 }

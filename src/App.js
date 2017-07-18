@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react' // eslint-disable-line no-unused-vars
 import './App.css'
-import Row from './ModRow' // eslint-disable-line no-unused-vars
+import Row from './ModRow'
 
 class App extends Component {
     constructor(props) {
@@ -95,7 +95,7 @@ class App extends Component {
                         selected={this.state.selectedRow === row.id}
                         rowChanged={v => this.rowChanged(v)}
                         onUserClick={() => this.rowSelected(row.id)}
-                        />)
+                    />)
                     : 'No Mods found'
                 }
             </ul>

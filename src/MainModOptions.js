@@ -27,6 +27,11 @@ class MainModOptions extends Component {
         for(let data in this.state.data){
             if(!this.state.data.hasOwnProperty(data)) continue
             fetch('/mods/mainModData/' + this.props.modId + '/' + data + '/' + this.state.data[data], {method: 'POST'})
+                .then(res => res.json())
+                .then(() => this.props.update())
+                .catch(() => {
+                    alert(e)
+                })
         }
         e.preventDefault()
     }

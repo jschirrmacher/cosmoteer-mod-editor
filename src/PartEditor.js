@@ -1,6 +1,7 @@
 import React, { Component } from 'react'                 // eslint-disable-line no-unused-vars
-import ShipLibraryEditForm from './ShipLibraryEditForm'  // eslint-disable-line no-unused-vars
+import ShipLibraryEditForm from './ShipLibraryEditForm'
 import MainModOptions from './MainModOptions'
+import AddLanguage from './AddLanguage'
 
 class PartEditor extends Component {
     selectAction(select) {
@@ -12,6 +13,7 @@ class PartEditor extends Component {
             <select onChange={e => this.selectAction(e.target)}>
                 <option disabled selected>Select action</option>
                 <option value="createShipLibrary">Create ship library</option>
+                <option value="addLanguage">Add language</option>
             </select>
         )
 
@@ -20,8 +22,11 @@ class PartEditor extends Component {
                 case 'createShipLibrary':
                     action = <ShipLibraryEditForm create={true} saveComponent={data => this.props.saveComponent(data)} />
                     break
+                case 'addLanguage':
+                    action = <AddLanguage create={true} saveComponent={data => this.props.saveComponent(data)} />
+                    break
                 default:
-                    console.log('This action is not supported: ' + this.state.action)
+                    alert('This action is not supported: ' + this.state.action)
                     break
             }
         }

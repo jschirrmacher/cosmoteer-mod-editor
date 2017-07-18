@@ -7,6 +7,7 @@ const parser = require('./parseFile')
 const glob = require('glob')
 const stripJs = require('strip-js')
 const winston = require('winston')
+const iso = require('iso-639-1')
 
 let mods = []
 
@@ -174,7 +175,7 @@ module.exports = {
                 res.json(data)
             }
         })
-        if(!found)res.json({error: "Did not find mod!"})
+        if(!found)res.json({error: 'Did not find mod!'})
     },
 
     changeMainModData: (req, res) => {
@@ -197,7 +198,7 @@ module.exports = {
                 mod[req.params.id] = req.params.value
                 if(mod.ignore !== undefined){
                     mod.ignore.toAdd = mod.ignore.toAdd.forEach(needed => {
-                        if(!needed === req.params.id) needed
+                        if(!needed === req.params.id) return needed
                     })
                 }
                 res.json('OK')
@@ -212,14 +213,63 @@ module.exports = {
     },
 
     createPart: (req, res) => {
-        fs.mkdirSync(path.join(__dirname, 'mods', req.params.mod, req.body.dirName), '0755')
-        let mod = readModFile(req.params.mod)
-        if (!mod.shiplibraries) {
-            mod.shiplibraries = []
+        function addLanguage(mod, lang){
+            if(mod.stringsfolder !== undefined){
+                fs.writeFile(path.join(__dirname, 'mods', req.params.mod, mod.stringsfolder,
+                    lang + '.txt', ''), (err) => {
+                    if(err) {
+                        winston.error(err)
+                        res.json({error: err})
+                    } else{
+                        res.json({success: 'Success!'})
+                    }
+                })
+            } else{
+                res.json({error: 'This mod does not have a Strings folder.' +
+                ' Please define this first in the main mod options.'})
+            }
+            mod.ígnore.push(lang)
+            return mod
         }
-        mod.shiplibraries.push({folder: req.body.dirName, namekey: req.body.titleId})
-        res.json(saveModFile(mod))
-        res.json(req.body)
+        switch(req.params.type){
+            case 'shipLibrary': {
+                fs.mkdirSync(path.join(__dirname, 'mods', req.params.mod, req.body.dirName), '0755')
+                let mod = readModFile(req.params.mod)
+                if (!mod.shiplibraries) {
+                    mod.shiplibraries = []
+                }
+                mod.shiplibraries.push({folder: req.body.dirName, namekey: req.body.titleId})
+                res.json(saveModFile(mod))
+                res.json(req.body)
+                break
+            }
+            case 'language': {
+                if(iso.validate(req.body.lang)){
+                    res.json('Success')
+                    let exist
+                    mods = mods.map(mod => {
+                        if(mod.id === req.params.id){
+                            if(mod.ignore.languages !== undefined){
+                                mod.ignore.languages.forEach(lang => {
+                                    if(lang == req.body.lang) exist = true
+                                })
+                            } else {
+                                mod.ignore.languages = []
+                            }
+                            if(exist) res.json({error: 'This language file has already been created!'})
+                            else mod = addLanguage(mod, req.body.lang)
+                            saveModFile(mod)
+                        }
+                        return mod
+                    })
+                } else res.json({error: req.body.lang + 'is not a valid language code!'})
+                break
+            }
+            default:
+                winston.error('Part of unknown type was trying to be created: '+ req.params.type)
+                res.json({error: 'Unknown type'})
+        }
+        winston.debug(req.params)
     },
 
     updatePart: (req, res) => {

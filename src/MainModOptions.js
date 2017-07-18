@@ -9,15 +9,7 @@ class MainModOptions extends Component {
         fetch('/mods/mainModData/' + this.props.modId)
             .then(res => res.json())
             .then(result => {
-                let dataR = {}
-                for(let rObj in result){
-                    for(let r in result[rObj]){
-                        if(result[rObj].hasOwnProperty(r)){
-                            dataR[r] = result[rObj][r]
-                        }
-                    }
-                }
-                this.setState({data: dataR})
+                this.setState({data: result})
             })
             .catch(e => alert(e))
     }

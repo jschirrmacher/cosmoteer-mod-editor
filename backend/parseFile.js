@@ -57,8 +57,7 @@ exports.readNewFile = (fileName, test = false) => {
     }
     //Add object _ignore
     if(!test){
-        returnValue.ignore = {toAdd: []}
-        if(returnValue.stringsfolder === undefined) returnValue.ignore.toAdd.push('stringsfolder')
+        returnValue.ignore = {}
     }
     return returnValue
 }

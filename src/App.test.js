@@ -4,7 +4,7 @@ import { shallow } from 'enzyme'    // eslint-disable-line no-unused-vars
 import { expect } from 'chai'
 
 import App from './App'             // eslint-disable-line no-unused-vars
-import Row from './ModRow'       // eslint-disable-line no-unused-vars
+import Row from './ModRow'          // eslint-disable-line no-unused-vars
 
 global.fetch = require('jest-fetch-mock')
 
@@ -19,7 +19,8 @@ it('renders without crashing', () => {
 
 it('renders a message when there are no mods', () => {
     const wrapper = shallow(<App />)
-    expect(wrapper.find('.App-intro').text()).to.equal('No Mods found')
+    expect(wrapper.find('.ModList').length).to.equal(1)
+    expect(wrapper.find('.ModList').text()).to.equal('No Mods found')
 })
 
 it('renders a form', () => {

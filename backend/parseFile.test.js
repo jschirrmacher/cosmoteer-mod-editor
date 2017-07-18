@@ -70,13 +70,13 @@ describe('File Parser', () => {
 
     it('should add ignore object with toAdd array', done => {
         let result = parseFile.readNewFile('./Test Files/simple.txt')
-        result.should.deepEqual({ignore: {toAdd: ["stringsfolder"]}})
+        result.should.deepEqual({ignore: {}})
         done()
     })
 
     it('should find complete.txt to be complete', done => {
         let result = parseFile.readNewFile('./Test Files/complete.txt')
-        result.should.deepEqual({stringsfolder : [], ignore: {toAdd: []} })
+        result.should.deepEqual({stringsfolder : [], ignore: {} })
         done()
     })
 

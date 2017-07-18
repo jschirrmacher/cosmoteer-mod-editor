@@ -8,9 +8,7 @@ const modHandler = require('./modHandler')
 
 describe('Mod Handler', () => {
     it('Read Mod File reacts correctly to improper file', done => {
-        let result = modHandler.readModFile('.Failure', '/Test Files/', true)
-        //noinspection BadExpressionStatementJS
-        result.should.false
+        should.not.exist(modHandler.readModFile('.Failure', '/Test Files/', true))
         done()
     })
 

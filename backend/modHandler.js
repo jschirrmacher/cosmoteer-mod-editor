@@ -9,56 +9,32 @@ const stripJs = require('strip-js')
 const winston = require('winston')
 const iso = require('iso-639-1')
 
-let mods = []
+let mods = {}
 
 function readModFile(modId, dir = '/mods/', test = false) {
-    let modData
-    //Find in mods
-    mods.forEach(mod => {
-        if(mod.id == modId) modData = mod
-    })
-    if(!modData){
-        try{
-            let fileName = path.join(__dirname, dir, modId, '/mod.txt')
-            modData = parser.readNewFile(fileName, test)
-            modData.ignore.languages = parser.getLanguages(path.join(__dirname, dir, modId, modData.stringsfolder))
-            //Add mod id
+    if (!mods[modId]) {
+        let modData = {}
+        try {
+            modData = parser.readNewFile(path.join(__dirname, dir, modId, '/mod.txt'), test)
             modData.id = modId
-            if(!test){
-                winston.log('New mod id: ' + modId)
-                mods.push(modData)
+            if (modData.stringsfolder) {
+                modData.ignore.languages = parser.getLanguages(path.join(__dirname, dir, modId, modData.stringsfolder))
             }
-        } catch(e){
-            if(!test) winston.log('Did not find mod file: ' + modId + e)
-            return false
+            modData.description = stripJs(modData.description)
+            if (!test) {
+                mods[modId] = modData
+            }
+        } catch (e) {
+            winston.warn(e)
+            winston.warn('Did not find mod file for: ' + modId)
         }
     }
-    modData.description = stripJs(modData.description)
-    return modData
-}
-
-function updateMod(newVersion){
-    let updatedMod
-    mods = mods.map(mod => {
-        if(mod.id === newVersion.id){
-            mod = newVersion
-            updatedMod = mod
-        }
-        return mod
-    })
-    return updatedMod
+    return mods[modId]
 }
 
 function saveModFile(mod) {
-    if (typeof mod !== 'object') {
-        //Act as if mod id
-        mods.forEach(_mod => {
-            if(_mod.id === mod) mod = _mod
-        })
-    }
-    let towrite = Object.assign({}, mod)
-    fs.writeFileSync('./mods/' + mod.id + '/mod.txt', parser.toString(towrite))
-    return updateMod(mod)
+    fs.writeFileSync('./mods/' + mod.id + '/mod.txt', parser.toString(mod))
+    return mod
 }
 
 module.exports = {
@@ -68,10 +44,18 @@ module.exports = {
         glob('mods/*/mod.txt', (err, files) => {
             res.json({
                 mods: files.map(file => {
-                    let mod = Object.assign({},readModFile(file.replace(/mods\/(.*?)\/mod.txt/, '$1')))
-                    if(!mod) {winston.log('error', 'This mod failed to load. Is the mod.txt correct? '); return null}
-                    if(mod.name !== undefined) mod.logo = '/mods/' + mod.id + '/media/' + mod.logo
-                    return mod
+                    let modId = file.replace(/mods\/(.*?)\/mod.txt/, '$1')
+                    try {
+                        let mod = Object.assign({id: modId}, readModFile(modId))
+                        if (mod.name !== undefined) {
+                            mod.logo = '/mods/' + mod.id + '/media/' + mod.logo
+                        }
+                        return mod
+                    } catch (e) {
+                        winston.warn(e)
+                        winston.warn('Mod \'%s\' failed to load. Is the mod.txt correct? ', modId)
+                        return null
+                    }
                 }).filter(mod => mod)
             })
         })
@@ -87,7 +71,7 @@ module.exports = {
     },
 
     createMod: (req,res) => {
-        if(readModFile(req.body.id)) {
+        if (readModFile(req.body.id)) {
             winston.log('debug','Project already exits!')
             res.json({error:'A mod with this ID already exists!'})
             return
@@ -113,7 +97,7 @@ module.exports = {
                     winston.log('error', 'An unknown type of line was trying to be inserted into a new mod: ' + line.typ)
             }
         })
-        //Create mod.txt and laod it into the mods via readModFile()
+        //Create mod.txt and load it into the mods via readModFile()
         fs.writeFile(path.join(__dirname, '/mods/', req.body.id, '/mod.txt'), txt, err => {
             if (err) {
                 res.json({error: err})
@@ -149,118 +133,77 @@ module.exports = {
     },
 
     updateMod: (req, res) => {
-        let toUpdate
-        if ((toUpdate = readModFile(req.params.mod))) {
-            toUpdate.name = req.body.name
-            toUpdate.version = req.body.version
-            toUpdate.author = req.body.author
-            toUpdate.description = req.body.description
-            res.json(saveModFile(toUpdate))
-        }else{
-            res.json({error: 'Mod has not been found!'})
+        if (!readModFile(req.params.mod)) {
+            res.json({error: 'Mod not found'})
+        } else {
+            mods[req.params.mod].name = req.body.name
+            mods[req.params.mod].version = req.body.version
+            mods[req.params.mod].author = req.body.author
+            mods[req.params.mod].description = req.body.description
+            res.json(saveModFile(mods[req.params.mod]))
         }
     },
 
     mainModData: (req, res) => {
-        let found = false
-        const needed = ['stringsfolder']
-        mods.forEach(mod => {
-            if(mod.id === req.params.mod) {
-                found = true
-                let data = []
-                needed.forEach(part => {
-                    let obj = {}
-                    if (mod[part] !== undefined) obj[part] = mod[part]
-                    else obj[part] = ''
-                    data.push(obj)
-                })
-                res.json(data)
-            }
-        })
-        if(!found)res.json({error: 'Did not find mod!'})
+        if (!readModFile(req.params.mod)) {
+            res.json({error: 'Mod not found'})
+        } else {
+            res.json({
+                stringsfolder: mods[req.params.mod].stringsfolder || ''
+            })
+        }
     },
 
     changeMainModData: (req, res) => {
-        let found = false
-        mods.forEach(mod => {
-            if(mod.id == req.params.mod) {
-                switch(req.params.id){
-                    case 'stringsfolder':
-                        if(mod[req.params.id] !== undefined){
-                            fs.renameSync(path.join(__dirname, 'mods', req.params.mod, mod[req.params.id]),
-                                path.join(__dirname, 'mods', req.params.mod, req.params.value))
-                        } else{
-                            fs.mkdirSync(path.join(__dirname, 'mods', req.params.mod, req.params.value))
-                        }
-                        break
-                    default:
-                        winston.error('The following id is not defiend as a mod.txt option: ' + req.params.id)
+        if (!readModFile(req.params.mod)) {
+            res.json({error: 'Mod not found'})
+        } else {
+            if (req.params.id === 'stringsfolder') {
+                if (mods[req.params.mod].stringsfolder) {
+                    fs.renameSync(
+                        path.join(__dirname, 'mods', req.params.mod, mods[req.params.mod].stringfolder),
+                        path.join(__dirname, 'mods', req.params.mod, req.params.value)
+                    )
+                } else {
+                    fs.mkdirSync(path.join(__dirname, 'mods', req.params.mod, req.params.value))
                 }
-                mod[req.params.id] = req.params.value
-                if(mod.ignore !== undefined){
-                    mod.ignore.toAdd = mod.ignore.toAdd.forEach(needed => {
-                        if(!needed === req.params.id) return needed
-                    })
-                }
-                res.json('OK')
-                found = true
-                saveModFile(mod)
+                mods[req.params.mod].stringfolder = req.params.value
+                res.json(saveModFile(mods[req.params.mod]))
             }
-        })
-        if(!found){
-            winston.log('debug', 'Did not find mod + ' + req.params.mod)
-            res.json('ERROR')
         }
     },
 
     createPart: (req, res) => {
-        function addLanguage(mod, lang){
-            if(mod.stringsfolder !== undefined){
-                fs.writeFileSync(path.join(__dirname, 'mods', req.params.mod, mod.stringsfolder,
-                    lang + '.txt'), '')
-                mod.ignore.languages.push(lang)
-                res.json({success: 'Success! Actually wrote thing'})
-                return mod
-            } else{
-                res.json({error: 'This mod does not have a Strings folder.' +
-                ' Please define this first in the main mod options.'})
-                return mod
-            }
-        }
         switch(req.params.type){
             case 'shipLibrary': {
                 fs.mkdirSync(path.join(__dirname, 'mods', req.params.mod, req.body.dirName), '0755')
-                let mod = readModFile(req.params.mod)
-                if (!mod.shiplibraries) {
-                    mod.shiplibraries = []
+                if (!readModFile(req.params.mod)) {
+                    res.json({error: 'Mod not found'})
+                } else {
+                    if (!mods[req.params.mod].shiplibraries) {
+                        mods[req.params.mod].shiplibraries = []
+                    }
+                    mods[req.params.mod].shiplibraries.push({folder: req.body.dirName, namekey: req.body.titleId})
+                    res.json(mods[req.params.mod])
                 }
-                mod.shiplibraries.push({folder: req.body.dirName, namekey: req.body.titleId})
-                res.json(req.body)
                 break
             }
             case 'language': {
-                if(iso.validate(req.body.lang)){
-                    let exist = false
-                    let foundMod = false
-                    mods = mods.map(mod => {
-                        if(mod.id === req.params.mod){
-                            foundMod = true
-                            winston.info(mod)
-                            if(mod.ignore.languages !== undefined){
-                                //noinspection ReuseOfLocalVariableJS
-                                exist = mod.ignore.languages.indexOf(req.body.lang) >= 0
-                            } else {
-                                mod.ignore.languages = []
-                            }
-                            if(exist) res.json({error: 'This language file has already been created!'})
-                            else mod = addLanguage(mod, req.body.lang)
-                            saveModFile(mod)
-                        }
-                        return mod
-                    })
-                    if(!foundMod) res.json({error: 'Did not find a fitting mod!'})
-                } else {
+                if (!readModFile(req.params.mod)) {
+                    res.json({error: 'Mod not found!'})
+                } else if (!iso.validate(req.body.lang)) {
                     res.json({error: req.body.lang + ' is not a valid language code!'})
+                } else if (mods[req.params.mod].ignore.languages && mods[req.params.mod].ignore.languages.indexOf(req.body.lang) >= 0) {
+                    res.json({error: 'This language file has already been created!'})
+                } else if (!mods[req.params.mod].stringsfolder) {
+                    res.json({error: 'This mod does not have a Strings folder.' +
+                    ' Please define this first in the main mod options.'})
+                } else {
+                    fs.writeFileSync(path.join(__dirname, 'mods', req.params.mod, mods[req.params.mod].stringsfolder,
+                        req.body.lang + '.txt'), '')
+                    mods[req.params.mod].ignore.languages.push(req.body.lang)
+                    saveModFile(mods[req.params.mod])
+                    res.json(mods[req.params.mod])
                 }
                 break
             }

@@ -64,8 +64,7 @@ function updateLanguage(modId, lang) {
     } else {
         fs.writeFileSync(path.join(__dirname, 'mods', modId, mods[modId].stringsfolder, lang + '.txt'), '')
         mods[modId].ignore.languages.push({id: lang, keywords: []})
-        saveModFile(mods[modId])
-        return mods[modId]
+        return saveModFile(mods[modId])
     }
 }
 
@@ -193,13 +192,13 @@ module.exports = {
             if (req.params.id === 'stringsfolder') {
                 if (mods[req.params.mod].stringsfolder) {
                     fs.renameSync(
-                        path.join(__dirname, 'mods', req.params.mod, mods[req.params.mod].stringfolder),
+                        path.join(__dirname, 'mods', req.params.mod, mods[req.params.mod].stringsfolder),
                         path.join(__dirname, 'mods', req.params.mod, req.params.value)
                     )
                 } else {
                     fs.mkdirSync(path.join(__dirname, 'mods', req.params.mod, req.params.value))
                 }
-                mods[req.params.mod].stringfolder = req.params.value
+                mods[req.params.mod].stringsfolder = req.params.value
                 res.json(saveModFile(mods[req.params.mod]))
             }
         }

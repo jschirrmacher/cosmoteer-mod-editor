@@ -50,8 +50,7 @@ exports.readNewFile = (fileName, test = false) => {
         }
     } catch (e) {
         if(!test) {
-            winston.log('error','Error --------------------') //eslint-disable-line no-console
-            winston.log('error','Error in file: ' + fileName) //eslint-disable-line no-console
+            winston.log('error','Error in file: ' + fileName)
         }
         throw e
     }

@@ -188,7 +188,7 @@ module.exports = {
                     mods[req.params.mod].ignore.keyWords.push(req.body.titleId)
                     res.json(mods[req.params.mod])
                 }
-                mod.shiplibraries.push({folder: req.body.dirName, namekey: req.body.titleId})
+                mods[req.params.mod].shiplibraries.push({folder: req.body.dirName, namekey: req.body.titleId})
                 res.json(req.body)
                 break
             }

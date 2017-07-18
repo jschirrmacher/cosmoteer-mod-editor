@@ -55,7 +55,8 @@ function saveModFile(mod) {
             if(_mod.id === mod) mod = _mod
         })
     }
-    fs.writeFileSync('./mods/' + mod.id + '/mod.txt', parser.toString(mod))
+    let towrite = Object.assign({}, mod)
+    fs.writeFileSync('./mods/' + mod.id + '/mod.txt', parser.toString(towrite))
     return updateMod(mod)
 }
 
@@ -194,7 +195,6 @@ module.exports = {
                     default:
                         winston.error('The following id is not defiend as a mod.txt option: ' + req.params.id)
                 }
-                winston.error(mod)
                 mod[req.params.id] = req.params.value
                 if(mod.ignore !== undefined){
                     mod.ignore.toAdd = mod.ignore.toAdd.forEach(needed => {
@@ -215,21 +215,16 @@ module.exports = {
     createPart: (req, res) => {
         function addLanguage(mod, lang){
             if(mod.stringsfolder !== undefined){
-                fs.writeFile(path.join(__dirname, 'mods', req.params.mod, mod.stringsfolder,
-                    lang + '.txt', ''), (err) => {
-                    if(err) {
-                        winston.error(err)
-                        res.json({error: err})
-                    } else{
-                        res.json({success: 'Success!'})
-                    }
-                })
+                fs.writeFileSync(path.join(__dirname, 'mods', req.params.mod, mod.stringsfolder,
+                    lang + '.txt'), '')
+                mod.ignore.languages.push(lang)
+                res.json({success: 'Success! Actually wrote thing'})
+                return mod
             } else{
                 res.json({error: 'This mod does not have a Strings folder.' +
                 ' Please define this first in the main mod options.'})
+                return mod
             }
-            mod.ígnore.push(lang)
-            return mod
         }
         switch(req.params.type){
             case 'shipLibrary': {
@@ -239,20 +234,20 @@ module.exports = {
                     mod.shiplibraries = []
                 }
                 mod.shiplibraries.push({folder: req.body.dirName, namekey: req.body.titleId})
-                res.json(saveModFile(mod))
                 res.json(req.body)
                 break
             }
             case 'language': {
                 if(iso.validate(req.body.lang)){
-                    res.json('Success')
-                    let exist
+                    let exist = false
+                    let foundMod = false
                     mods = mods.map(mod => {
-                        if(mod.id === req.params.id){
+                        if(mod.id === req.params.mod){
+                            foundMod = true
+                            winston.info(mod)
                             if(mod.ignore.languages !== undefined){
-                                mod.ignore.languages.forEach(lang => {
-                                    if(lang == req.body.lang) exist = true
-                                })
+                                //noinspection ReuseOfLocalVariableJS
+                                exist = mod.ignore.languages.indexOf(req.body.lang) >= 0
                             } else {
                                 mod.ignore.languages = []
                             }
@@ -262,14 +257,16 @@ module.exports = {
                         }
                         return mod
                     })
-                } else res.json({error: req.body.lang + 'is not a valid language code!'})
+                    if(!foundMod) res.json({error: 'Did not find a fitting mod!'})
+                } else {
+                    res.json({error: req.body.lang + ' is not a valid language code!'})
+                }
                 break
             }
             default:
                 winston.error('Part of unknown type was trying to be created: '+ req.params.type)
                 res.json({error: 'Unknown type'})
         }
-        winston.debug(req.params)
     },
 
     updatePart: (req, res) => {

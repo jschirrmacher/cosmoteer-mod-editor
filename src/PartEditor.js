@@ -1,7 +1,7 @@
 import React, { Component } from 'react'                 // eslint-disable-line no-unused-vars
 import ShipLibraryEditForm from './ShipLibraryEditForm'
 import MainModOptions from './MainModOptions'
-import AddLanguage from './AddLanguage'
+import AddLanguage from './AddLanguageToMod'
 
 class PartEditor extends Component {
     selectAction(select) {

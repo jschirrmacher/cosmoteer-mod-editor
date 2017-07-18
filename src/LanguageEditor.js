@@ -16,20 +16,18 @@ class LanguageEditor extends Component {
                 {state !== undefined ? state.languages.map(lang => <th> {lang.id} </th>) : ''}
             </tr>
         let tableBody = state !== undefined ? state.keywords.map(word => {
-            return(<tr>
+            return (<tr>
                 <td>{word}</td>
                 {state.languages.map(lang => {
-                    let found = false
-                    lang.keywords.map(key => {
-                        if(key.id === word){
-                            found = true
-                            return <td>key.value</td>
-                        }
-                    })
-                    if(!found) return <td>---</td>
+                    let keywords = lang.keywords.filter(key => key.id === word)
+                    if (keywords.length) {
+                        return <td>{keywords[0].value}</td>
+                    } else {
+                        return <td>---</td>
+                    }
                 })}
                 </tr>)
-            }) : ''
+        }) : ''
         return (
             <table>
                 <tbody>

@@ -8,9 +8,15 @@ const modHandler = require('./modHandler')
 
 describe('Mod Handler', () => {
     it('Read Mod File reacts correctly to improper file', done => {
-        let result = modHandler.readModFile('.Failure', 'Test Files', true)
+        let result = modHandler.readModFile('.Failure', '/Test Files/', true)
         //noinspection BadExpressionStatementJS
         result.should.false
+        done()
+    })
+
+    it('should read in sample mod with languages', done => {
+        let result = modHandler.readModFile('S_Mod', '/Test Files/')
+        result.ignore.languages.should.deepEqual(['en'])
         done()
     })
 })

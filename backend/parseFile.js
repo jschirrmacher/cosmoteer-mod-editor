@@ -5,6 +5,8 @@
 const fs = require('fs')
 const tokeniser = require('js-tokeniser')
 const winston = require('winston')
+const iso = require('iso-639-1')
+
 
 const newRules = require('./rules')
 
@@ -22,6 +24,16 @@ exports.preparseFile = (text, activeRules) => {
 
 exports.newParser = (fileName) => {
     return tokeniser(fs.readFileSync(fileName).toString().replace(/\r/g, ''), newRules)
+}
+
+exports.getLanguages = (directoryPath) => {
+    let langFiles = []
+    let files = fs.readdirSync(directoryPath)
+    files.forEach(file => {
+        var replace = file.replace('.txt', '')
+        if(iso.validate(replace)) langFiles.push(replace)
+    })
+    return langFiles
 }
 
 exports.readNewFile = (fileName, test = false) => {

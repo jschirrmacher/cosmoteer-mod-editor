@@ -79,5 +79,11 @@ describe('File Parser', () => {
         result.should.deepEqual({stringsfolder : [], ignore: {toAdd: []} })
         done()
     })
+
+    it("should find both languages present in directory", done => {
+        let result = parseFile.getLanguages('./Test Files/Languages')
+        result.should.deepEqual(['de', 'en'])
+        done()
+    })
 })
 

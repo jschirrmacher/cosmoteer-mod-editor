@@ -1,0 +1,7 @@
+name = "asdawe"
+version = "asdasd"
+author = "sdfgsdfg"
+description = "Please add a description"
+id = "asdfsdf"
+logo = "armor.png"
+stringsfolder = "Strings"

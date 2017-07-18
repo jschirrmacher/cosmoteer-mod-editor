@@ -21,6 +21,7 @@ function readModFile(modId, dir = '/mods/', test = false) {
         try{
             let fileName = path.join(__dirname, dir, modId, '/mod.txt')
             modData = parser.readNewFile(fileName, test)
+            modData.ignore.languages = parser.getLanguages(path.join(__dirname, dir, modId, modData.stringsfolder))
             //Add mod id
             modData.id = modId
             if(!test){

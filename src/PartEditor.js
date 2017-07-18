@@ -17,6 +17,10 @@ class PartEditor extends Component {
             })
     }
 
+    resetAction(){
+        this.setState({action: undefined})
+    }
+
     render() {
         let action = (
             <select onChange={e => this.selectAction(e.target)}>
@@ -29,10 +33,12 @@ class PartEditor extends Component {
         if (this.state) {
             switch (this.state.action) {
                 case 'createShipLibrary':
-                    action = <ShipLibraryEditForm create={true} saveComponent={data => this.props.saveComponent(data)} />
+                    action = <ShipLibraryEditForm reset={() => this.resetAction()} create={true}
+                        saveComponent={data => {this.props.saveComponent(data); this.updateLanguageData()}} />
                     break
                 case 'addLanguage':
-                    action = <AddLanguage saveComponent={data => this.props.saveComponent(data)} />
+                    action = <AddLanguage reset={() => this.resetAction()}
+                        saveComponent={data => {this.props.saveComponent(data); this.updateLanguageData()}} />
                     break
                 case undefined:
                     //Ignore
@@ -46,8 +52,11 @@ class PartEditor extends Component {
         return (
             <div>
                 <ul>
-                    <li className = "ModList"><MainModOptions update = {() => this.updateLanguageData()} modId ={this.props.modId} /></li>
-                    <li><LanguageEditor data={this.state? this.state.lang : undefined} newData = {() => this.updateLanguageData()} modId={this.props.modId}/> </li>
+                    <li className = "ModList"><MainModOptions update = {() => this.updateLanguageData()}
+                        modId ={this.props.modId} reset={() => this.resetAction()}/></li>
+                    <li><LanguageEditor data={this.state? this.state.lang : undefined}
+                        newData = {() => this.updateLanguageData()} reset={() => this.resetAction()}
+                        modId={this.props.modId}/> </li>
                     <li>Another part</li>
                 </ul>
                 {action}

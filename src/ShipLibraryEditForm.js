@@ -3,6 +3,7 @@ import React, { Component } from 'react'               // eslint-disable-line no
 class ShipLibraryEditForm extends Component {
     save(event) {
         event.preventDefault()
+        this.props.update()
         this.props.saveComponent({
             create: this.props.create,
             type: 'shipLibrary',

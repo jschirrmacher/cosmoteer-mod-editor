@@ -222,10 +222,6 @@ module.exports = {
     },
 
     getLanguageOverview: (req, res) => {
-        mods.forEach(mod => {
-            if(mod.id === req.params.mod){
-                res.json({languages: mod.ignore.languages, keywords: mod.ignore.keyWords})
-            }
-        })
+        res.json({languages: mods[req.params.mod].ignore.languages, keywords: mods[req.params.mod].ignore.keyWords})
     }
 }

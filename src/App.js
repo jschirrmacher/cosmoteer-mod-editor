@@ -1,23 +1,14 @@
 import React, { Component } from 'react' // eslint-disable-line no-unused-vars
 import './App.css'
-import Row from './ModRow' // eslint-disable-line no-unused-vars
+import Row from './ModRow'      // eslint-disable-line no-unused-vars
+import AddMod from './AddMod'   // eslint-disable-line no-unused-vars
 
 class App extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            mods: [],
-            newMod: {},
-            newModData: {hasError : false, message: ''}
+            mods: []
         }
-    }
-
-    handleInputChange(event) {
-        const target = event.target
-        this.setState((state) => {
-            state.newMod[target.name] = target.value
-            return state
-        })
     }
 
     static titleSort(a, b) {
@@ -33,36 +24,12 @@ class App extends Component {
             })
     }
 
-    handleSubmit(event) {
-        //Check if all data is there
-        let data = this.state.newMod
-        if (data.id !== undefined && data.name !== undefined && data.author !== undefined && data.version !== undefined) {
-            let form = event.target
-            fetch('/mods', {
-                method: 'POST',
-                body: JSON.stringify(this.state.newMod),
-                headers: {'Content-Type': 'application/json'}
-            })
-                .then(response => response.json())
-                .then(response => {
-                    if (response.error) {
-                        throw response.error
-                    }
-                    this.setState(state => {
-                        state.mods.push(response)
-                        state.mods.sort(App.titleSort)
-                        state.newModData.hasError = false
-                        return state
-                    })
-                    form.reset()
-                })
-                .catch(e => {
-                    this.setState({newModData: {hasError: true, message: e}})
-                })
-        } else{
-            this.setState({newModData: {hasError: true, message: 'Please fill in all fields!'}})
-        }
-        event.preventDefault()
+    addNewMod(mod) {
+        this.setState(state => {
+            state.mods.push(mod)
+            state.mods.sort(App.titleSort)
+            return state
+        })
     }
 
     rowChanged(value) {
@@ -99,29 +66,7 @@ class App extends Component {
                     : 'No Mods found'
                 }
             </ul>
-            <div className="addMod">
-                <img className="addModImage" src="/mods/x/media/logo.png" alt="" />
-                <form className="addModForm" onSubmit={(event) => this.handleSubmit(event)}>
-                    <div className="newModDiv" id="newModID">
-                        Mod ID:
-                        <input className="newModInput" type="text" name="id" onChange={(event) => this.handleInputChange(event)}/>
-                    </div>
-                    <div className="newModDiv" id="newModName">
-                        Name:
-                        <input className="newModInput" type="text" name="name" onChange={(event) => this.handleInputChange(event)}/>
-                    </div>
-                    <div className="newModDiv" id="newModAuthor">
-                        Author:
-                        <input className="newModInput" type="text" name="author" onChange={(event) => this.handleInputChange(event)}/>
-                    </div>
-                    <div className="newModDiv" id="newModVersion">
-                        Version:
-                        <input className="newModInput" type="text" name="version" onChange={(event) => this.handleInputChange(event)}/>
-                    </div>
-                    <input className="newModSubmit" type="submit" value="Create Mod"/>
-                </form>
-                {this.state.newModData.hasError ? <p id="newModError">{this.state.newModData.message}</p> : ''}
-            </div>
+            <AddMod addNewMod={mod => this.addNewMod(mod)}/>
         </div>
     }
 }

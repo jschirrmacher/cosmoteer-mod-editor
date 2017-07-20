@@ -1,6 +1,11 @@
 import React from 'react'
 
 class AddMod extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {id: '', name: '', author: '', version: ''}
+    }
+
     postNewMod(data, success, error) {
         if (!data.id || !data.name || !data.author || !data.version) {
             this.setState({error: 'Please fill in all fields!'})
@@ -33,9 +38,9 @@ class AddMod extends React.Component {
         this.setState({error: error})
     }
 
-    handleInputChange(el) {
+    inputChange(e) {
         this.setState(state => {
-            state[el.name] = el.value
+            state[e.target.name] = e.target.value
             return state
         })
     }
@@ -55,35 +60,27 @@ class AddMod extends React.Component {
                 }}>
                     <div className="newModDiv" id="newModID">
                         Mod ID:
-                        <input className="newModInput" type="text" name="id"
-                            value={(this.state && this.state.id) || ''}
-                            onChange={e => this.handleInputChange(e.target)}
-                        />
+                        <input className="newModInput" type="text" name="id" value={this.state.id}
+                            onChange={e => this.inputChange(e)}/>
                     </div>
                     <div className="newModDiv" id="newModName">
                         Name:
-                        <input className="newModInput" type="text" name="name"
-                            value={(this.state && this.state.name) || ''}
-                            onChange={e => this.handleInputChange(e.target)}
-                        />
+                        <input className="newModInput" type="text" name="name" value={this.state.name}
+                            onChange={e => this.inputChange(e)} />
                     </div>
                     <div className="newModDiv" id="newModAuthor">
                         Author:
-                        <input className="newModInput" type="text" name="author"
-                            value={(this.state && this.state.author) || ''}
-                            onChange={e => this.handleInputChange(e.target)}
-                        />
+                        <input className="newModInput" type="text" name="author" value={this.state.author}
+                            onChange={e => this.inputChange(e)} />
                     </div>
                     <div className="newModDiv" id="newModVersion">
                         Version:
-                        <input className="newModInput" type="text" name="version"
-                            value={(this.state && this.state.version) || ''}
-                            onChange={e => this.handleInputChange(e.target)}
-                        />
+                        <input className="newModInput" type="text" name="version" value={this.state.version}
+                            onChange={e => this.inputChange(e)} />
                     </div>
                     <input className="newModSubmit" type="submit" value="Create Mod"/>
                 </form>
-                {this.state && this.state.error && <p id="newModError">{this.state.error}</p>}
+                {this.state.error && <p id="newModError">{this.state.error}</p>}
             </div>
         )
     }

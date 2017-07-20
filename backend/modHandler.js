@@ -161,7 +161,7 @@ module.exports = {
                 //Change the mod in mods
                 mods.forEach(mod => {
                     if (mod.id === req.params.mod) {
-                        winston.debug(Uploaded picture to mod: ' + mod.id)
+                        winston.debug('Uploaded picture to mod: ' + mod.id)
                         mod.logo = fileName
                         saveModFile(mod)
                     }

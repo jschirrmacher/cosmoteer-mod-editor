@@ -1,6 +1,6 @@
 import React, { Component } from 'react' // eslint-disable-line no-unused-vars
 import './App.css'
-import Row from './ModRow'
+import Row from './ModRow' // eslint-disable-line no-unused-vars
 
 class App extends Component {
     constructor(props) {

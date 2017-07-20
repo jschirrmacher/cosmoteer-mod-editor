@@ -16,7 +16,7 @@ function readModFile(modId, dir = '/mods/', test = false) {
         let modData = {}
         try {
             modData = parser.readNewFile(path.join(__dirname, dir, modId, '/mod.txt'), test)
-            modData.id = modId
+            modData.ignore.id = modId
             if (modData.stringsfolder) {
                 modData.ignore.languages = parser.getLanguages(path.join(__dirname, dir, modId, modData.stringsfolder))
             } else modData.ignore.languages = []
@@ -36,7 +36,7 @@ function readModFile(modId, dir = '/mods/', test = false) {
 function saveModFile(mod) {
     winston.debug('Saving')
     winston.info(mod)
-    fs.writeFileSync('./mods/' + mod.id + '/mod.txt', parser.toString(Object.assign({}, mod)))
+    fs.writeFileSync('./mods/' + mod.ignore.id + '/mod.txt', parser.toString(Object.assign({}, mod)))
     winston.info(mod)
     return mod
 }
@@ -56,7 +56,7 @@ function updateShipLibrary(modId, dirName, titleId, fn) {
             }
             mods[modId].shiplibraries.push({folder: dirName, namekey: titleId})
             mods[modId].ignore.keyWords.push(titleId)
-            saveModFile(mods[modID])
+            saveModFile(mods[modId])
             fn(mods[modId])
         })
     }
@@ -75,7 +75,7 @@ function updateLanguage(modId, lang) {
         winston.info('Creating the file')
         fs.writeFileSync(path.join(__dirname, 'mods', modId, mods[modId].stringsfolder, lang + '.txt'), '')
         winston.info(mods[modId])
-        mods[modId].ignore.languages.push({id: lang, keywords: []})
+        mods[modId].ignore.languages.push({id: lang, keywords: {}})
         winston.info(mods[modId])
         return saveModFile(mods[modId])
     }
@@ -92,7 +92,7 @@ module.exports = {
                     try {
                         let mod = Object.assign({id: modId}, readModFile(modId))
                         if (mod.name !== undefined) {
-                            mod.logo = '/mods/' + mod.id + '/media/' + mod.logo
+                            mod.logo = '/mods/' + mod.ignore.id + '/media/' + mod.logo
                         }
                         return mod
                     } catch (e) {
@@ -115,7 +115,7 @@ module.exports = {
     },
 
     createMod: (req,res) => {
-        if (readModFile(req.body.id)) {
+        if (fs.existsSync(path.join(__dirname, 'mods', req.body.id))) {
             winston.debug('Project already exits!')
             res.json({error:'A mod with this ID already exists!'})
             return
@@ -159,13 +159,10 @@ module.exports = {
                 let newPath = path.join(__dirname, 'mods', modName, fileName)
                 fileStream.pipe(fs.createWriteStream(newPath))
                 //Change the mod in mods
-                mods.forEach(mod => {
-                    if (mod.id === req.params.mod) {
-                        winston.debug('Uploaded picture to mod: ' + mod.id)
-                        mod.logo = fileName
-                        saveModFile(mod)
-                    }
-                })
+                if((mods[req.params.mod].logo = fileName)){
+                    winston.debug('Uploaded picture to mod: ' + mods[req.params.mod].ignore.id)
+                    saveModFile(mods[req.params.mod])
+                }
                 //Send back new logo path
                 res.json('mods/' + modName + '/media/' + fileName)
             })
@@ -254,5 +251,23 @@ module.exports = {
         } else{
             res.json({error: 'Mod not found!'})
         }
+    },
+
+    editLanguage: (req, res) => {
+        if(mods[req.params.mod]){
+            Object.keys(req.body).forEach(lang => {
+                mods[req.params.mod].ignore.languages = mods[req.params.mod].ignore.languages.map(bLang => {
+                    if(bLang !== undefined){
+                        if(lang === bLang.id){
+                            Object.keys(req.body[lang]).forEach(key => {
+                                bLang.keywords[key] = req.body[lang][key]
+                            })
+                        }
+                        return bLang
+                    }
+                })
+            })
+            res.json(mods[req.params.mod].ignore.languages)
+        } else res.json({error: 'Mod not found!'})
     }
 }

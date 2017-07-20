@@ -17,11 +17,6 @@ function throwError(errorMessage, additionalData = []){
     throw errorMessage
 }
 
-
-exports.preparseFile = (text, activeRules) => {
-    return tokeniser(text, activeRules).map(element => element.source.trim()).filter(element => !element.match(/^$/))
-}
-
 exports.newParser = (fileName) => {
     return tokeniser(fs.readFileSync(fileName).toString().replace(/\r/g, ''), newRules)
 }
@@ -36,28 +31,9 @@ exports.getLanguages = (directoryPath) => {
     return langFiles
 }
 
-exports.readNewFile = (fileName, test = false) => {
-    let tokenArray = this.newParser(fileName)
-    let returnValue
-    returnValue = {}
-    try{
-        if (tokenArray[0].type === 'arrayStart') {
-            returnValue[tokenArray.shift().matches[1].toLowerCase()] = createArray(tokenArray)
-        } else if (tokenArray[0].type === 'objectStart') {
-            returnValue[tokenArray.shift().matches[1].toLowerCase()] = createObj(tokenArray)
-        } else {
-            returnValue = createObj(tokenArray)
-        }
-    } catch (e) {
-        if(!test) {
-            winston.log('error','Error in file: ' + fileName)
-        }
-        throw e
-    }
-    //Add object _ignore
-    if(!test){
-        returnValue.ignore = {}
-    }
+exports.readNewFile = (fileName) => {
+    let returnValue = createObj(this.newParser(fileName))
+    returnValue.ignore = {}
     return returnValue
 }
 

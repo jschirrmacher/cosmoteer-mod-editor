@@ -99,6 +99,7 @@ function handleContinuation(str) {
     return str.split(/\\\n/).map(cleanse).join('')
 }
 
+//Will delete ignore, only send copy not be reference!!!
 function toString(value, level = 0, useTabs = true) {
     function tabs(str, num = level) {
         return Array(num).join('\t') + str

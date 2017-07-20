@@ -10,6 +10,7 @@ class ShipLibraryEditForm extends Component {
             dirName: event.target.elements.dirname.value,
             titleId: event.target.elements.titleID.value
         })
+        this.props.update()
     }
 
     render() {

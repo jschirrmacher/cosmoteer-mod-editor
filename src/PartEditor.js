@@ -3,17 +3,23 @@ import ShipLibraryEditForm from './ShipLibraryEditForm'
 import MainModOptions from './MainModOptions'
 import AddLanguage from './addLanguage'
 import LanguageEditor from './LanguageEditor'
+import ShipLibrary from './shipLibrary'
 
 class PartEditor extends Component {
     selectAction(select) {
         this.setState({action: select[select.selectedIndex].value})
     }
 
-    updateLanguageData() {
+    update() {
         fetch('/mods/Languages/' + this.props.modId)
             .then(res => res.json())
             .then(result =>{
                 this.setState({lang:{languages: result.languages, keywords: result.keywords}})
+            })
+        fetch('/mod/'+this.props.modId)
+            .then(res => res.json())
+            .then(result => {
+                this.setState({data: result.data})
             })
     }
 
@@ -34,11 +40,11 @@ class PartEditor extends Component {
             switch (this.state.action) {
                 case 'createShipLibrary':
                     action = <ShipLibraryEditForm reset={() => this.resetAction()} create={true}
-                        saveComponent={data => {this.props.saveComponent(data); this.updateLanguageData()}} />
+                        saveComponent={data => this.props.saveComponent(data)} update={() => this.update()} />
                     break
                 case 'addLanguage':
-                    action = <AddLanguage reset={() => this.resetAction()}
-                        saveComponent={data => {this.props.saveComponent(data); this.updateLanguageData()}} />
+                    action = <AddLanguage create={true} reset={() => this.resetAction()} update={() => this.update()}
+                        saveComponent={data => this.props.saveComponent(data)} />
                     break
                 case undefined:
                     //Ignore
@@ -48,18 +54,20 @@ class PartEditor extends Component {
                     break
             }
         }
+        let shipLibraries = this.state && this.state.data && this.state.data.shiplibraries ? this.state.data.shiplibraries.map(lib => <ShipLibrary data={lib}/>) : ''
 
         return (
             <div>
                 <ul>
-                    <li className = "ModList"><MainModOptions update = {() => this.updateLanguageData()}
+                    <li className = "ModList"><MainModOptions update = {() => this.update()}
                         modId ={this.props.modId} reset={() => this.resetAction()}/></li>
                     <li><LanguageEditor data={this.state? this.state.lang : undefined}
-                        newData = {() => this.updateLanguageData()} reset={() => this.resetAction()}
+                        newData = {() => this.update()} reset={() => this.resetAction()}
                         modId={this.props.modId}/> </li>
-                    <li>Another part</li>
+                    {shipLibraries}
                 </ul>
                 {action}
+                <button onClick={() => this.resetAction()}>Cancel</button>
             </div>
         )
     }

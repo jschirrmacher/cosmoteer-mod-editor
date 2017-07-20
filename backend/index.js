@@ -40,16 +40,17 @@ app.use((req, res, next) => {
 app.post('/mods', modHandler.createMod)
 app.post('/mods/upload/picture/:mod', modHandler.uploadPicture)
 app.post('/mods/mainModData/:mod/:id/:value', modHandler.changeMainModData)
+app.post('/mods/:mod/parts/:type', modHandler.createPart)
 
 app.put('/mods/:mod', modHandler.updateMod)
-
-app.post('/mods/:mod/parts/:type', modHandler.createPart)
 app.put('/mods/:mod/parts/:type', modHandler.updatePart)
 
 app.get('/mods', modHandler.listMods)
+app.get('/mod/:mod', modHandler.getMod)
 app.get('/mods/:mod/media/:file', modHandler.getMediaFile)
 app.get('/mods/mainModData/:mod', modHandler.mainModData)
 app.get('/mods/Languages/:mod', modHandler.getLanguageOverview)
 
 app.listen(3001)
 winston.log('info', 'Server running')
+winston.debug('Debug ouput is visible!')

@@ -12,6 +12,7 @@ class AddLanguage extends Component {
             type: 'language',
             lang: event.target.elements.language.value
         })
+        this.props.update()
     }
 
     render() {

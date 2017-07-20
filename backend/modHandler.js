@@ -34,21 +34,31 @@ function readModFile(modId, dir = '/mods/', test = false) {
 }
 
 function saveModFile(mod) {
-    fs.writeFileSync('./mods/' + mod.id + '/mod.txt', parser.toString(mod))
+    winston.debug('Saving')
+    winston.info(mod)
+    fs.writeFileSync('./mods/' + mod.id + '/mod.txt', parser.toString(Object.assign({}, mod)))
+    winston.info(mod)
     return mod
 }
 
-function updateShipLibrary(modId, dirName, titleId) {
-    fs.mkdirSync(path.join(__dirname, 'mods', modId, dirName), '0755')
+function updateShipLibrary(modId, dirName, titleId, fn) {
     if (!readModFile(modId)) {
-        return {error: 'Mod not found'}
+        fn({error: 'Mod not found'})
     } else {
-        if (!mods[modId].shiplibraries) {
-            mods[modId].shiplibraries = []
-        }
-        mods[modId].shiplibraries.push({folder: dirName, namekey: titleId})
-        mods[modId].ignore.keyWords.push(titleId)
-        return mods[modId]
+        fs.mkdir(path.join(__dirname, 'mods', modId, dirName), '0755', (e) => {
+            winston.debug('Created dir')
+            if(e) {
+                winston.error(e)
+                return {error: 'This directory already exists!'}
+            }
+            if (!mods[modId].shiplibraries) {
+                mods[modId].shiplibraries = []
+            }
+            mods[modId].shiplibraries.push({folder: dirName, namekey: titleId})
+            mods[modId].ignore.keyWords.push(titleId)
+            saveModFile(mods[modID])
+            fn(mods[modId])
+        })
     }
 }
 
@@ -62,8 +72,11 @@ function updateLanguage(modId, lang) {
     } else if (!mods[modId].stringsfolder) {
         return {error: 'This mod does not have a Strings folder. Please define this first in the main mod options.'}
     } else {
+        winston.info('Creating the file')
         fs.writeFileSync(path.join(__dirname, 'mods', modId, mods[modId].stringsfolder, lang + '.txt'), '')
+        winston.info(mods[modId])
         mods[modId].ignore.languages.push({id: lang, keywords: []})
+        winston.info(mods[modId])
         return saveModFile(mods[modId])
     }
 }
@@ -103,7 +116,7 @@ module.exports = {
 
     createMod: (req,res) => {
         if (readModFile(req.body.id)) {
-            winston.log('debug','Project already exits!')
+            winston.debug('Project already exits!')
             res.json({error:'A mod with this ID already exists!'})
             return
         }
@@ -125,7 +138,7 @@ module.exports = {
                     }
                     break
                 default:
-                    winston.log('error', 'An unknown type of line was trying to be inserted into a new mod: ' + line.typ)
+                    winston.error('An unknown type of line was trying to be inserted into a new mod: ' + line.typ)
             }
         })
         //Create mod.txt and load it into the mods via readModFile()
@@ -148,7 +161,7 @@ module.exports = {
                 //Change the mod in mods
                 mods.forEach(mod => {
                     if (mod.id === req.params.mod) {
-                        winston.log('info', 'Uploaded picture to mod: ' + mod.id)
+                        winston.debug(Uploaded picture to mod: ' + mod.id)
                         mod.logo = fileName
                         saveModFile(mod)
                     }
@@ -158,7 +171,7 @@ module.exports = {
             })
             req.pipe(req.busboy)
         } else{
-            winston.log('error', 'req.busboy was not added to the picture upload!')
+            winston.error('req.busboy was not added to the picture upload!')
             res.json('Error!')
         }
     },
@@ -205,14 +218,19 @@ module.exports = {
     },
 
     createPart: (req, res) => {
+        if(!mods[req.params.mod]) {
+            res.json({error: 'This mod is not defined! ' + req.params.mod})
+            return
+        }
         let actions = {
-            shipLibrary: () => updateShipLibrary(req.params.mod, req.body.dirName, req.body.titleId),
-            language: () => updateLanguage(req.params.mod, req.body.lang)
+            shipLibrary: () => updateShipLibrary(req.params.mod, req.body.dirName, req.body.titleId, (r) => res.json(r)),
+            language: () => res.json(updateLanguage(req.params.mod, req.body.lang))
         }
         try{
-            res.json(actions[req.params.type])
+            actions[req.params.type]()
         } catch (e) {
             winston.error('Part of unknown type was trying to be created: '+ req.params.type)
+            winston.error(e)
             res.json({error: 'Unknown type'})
         }
     },
@@ -222,6 +240,19 @@ module.exports = {
     },
 
     getLanguageOverview: (req, res) => {
-        res.json({languages: mods[req.params.mod].ignore.languages, keywords: mods[req.params.mod].ignore.keyWords})
+        try{
+            res.json({languages: mods[req.params.mod].ignore.languages, keywords: mods[req.params.mod].ignore.keyWords})
+        } catch (e) {
+            winston.error(e)
+            res.json({error: 'Can not get language!'})
+        }
+    },
+
+    getMod: (req, res) => {
+        if(mods[req.params.mod]){
+            res.json({data: mods[req.params.mod]})
+        } else{
+            res.json({error: 'Mod not found!'})
+        }
     }
 }

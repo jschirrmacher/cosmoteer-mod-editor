@@ -83,7 +83,7 @@ class ModRow extends Component {
                     {description}
                 </div>
                 {this.props.selected ?
-                    <PartEditor modId={this.props.data.id} saveComponent={data => this.saveComponent(data)} /> :
+                    <PartEditor modId={this.props.data.id} mod={this.props.data} saveComponent={data => this.saveComponent(data)} /> :
                     ''
                 }
             </li>

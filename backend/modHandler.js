@@ -18,9 +18,13 @@ function readModFile(modId, dir = '/mods/', test = false) {
             modData = parser.readNewFile(path.join(__dirname, dir, modId, '/mod.txt'), test)
             modData.ignore.id = modId
             if (modData.stringsfolder) {
-                modData.ignore.languages = parser.getLanguages(path.join(__dirname, dir, modId, modData.stringsfolder))
-            } else modData.ignore.languages = []
-            modData.ignore.keyWords = []
+                let langData = parser.getLanguages(path.join(__dirname, dir, modId, modData.stringsfolder))
+                modData.ignore.languages = langData[0]
+                modData.ignore.keyWords = langData[1]
+            } else {
+                modData.ignore.languages = []
+                modData.ignore.keyWords = []
+            }
             modData.description = stripJs(modData.description)
             if (!test) {
                 mods[modId] = modData

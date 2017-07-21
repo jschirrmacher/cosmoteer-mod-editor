@@ -1,6 +1,6 @@
 import React, { Component } from 'react' // eslint-disable-line no-unused-vars
 import { connect } from 'react-redux'
-import { listMods } from './actions'
+import { listMods, selectMod } from './actions'
 import './App.css'
 import Row from './ModRow'      // eslint-disable-line no-unused-vars
 import AddMod from './AddMod'   // eslint-disable-line no-unused-vars
@@ -34,20 +34,14 @@ class App extends Component {
         }, this)
     }
 
-    rowSelected(id) {
-        this.setState({
-            selectedRow: id
-        })
-    }
-
     render() {
         let modList = (<div>
             <ul className="ModList">
-                    {this.props.mods.length
-                        ? this.props.mods.map((row) => <Row key={row.id} data={row}
+                {this.props.mods.length
+                    ? this.props.mods.map((row) => <Row key={row.id} data={row}
                         selected={this.props.selectedRow === row.id}
                         rowChanged={v => this.rowChanged(v)}
-                        onUserClick={() => this.rowSelected(row.id)}
+                        onUserClick={() => this.props.rowSelected(row.id)}
                     />)
                     : 'No Mods found'
                 }
@@ -70,13 +64,15 @@ const mapStateToProps = state => {
     return {
         mods: state.listMods,
         error: state.listModsHasError,
-        isLoading: state.listModsIsLoading
+        isLoading: state.listModsIsLoading,
+        selectedRow: state.selectMod
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        listMods: () => dispatch(listMods())
+        listMods: () => dispatch(listMods()),
+        rowSelected: (id) => dispatch(selectMod(id))
     }
 }
 

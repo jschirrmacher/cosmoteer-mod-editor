@@ -25,19 +25,21 @@ exports.newParser = (fileName) => {
 exports.getLanguages = (directoryPath) => {
     let langFiles = []
     let files = fs.readdirSync(directoryPath)
+    let gKeyword = []
     files.forEach(file => {
-        var replace = file.replace('.txt', '')
-        var data = tokeniser(fs.readFileSync(path.join(directoryPath, file)).toString(), newRules)
-        var keyword = {}
+        let replace = file.replace('.txt', '')
+        let data = tokeniser(fs.readFileSync(path.join(directoryPath, file)).toString(), newRules)
+        let keyword = {}
         data.forEach(token => {
             if(token.type === 'definition'){
                 keyword[token.matches[1]] = token.matches[2]
+                if(gKeyword.indexOf(token.matches[1]) == -1) gKeyword.push(token.matches[1])
             }
         })
         winston.debug(JSON.stringify(keyword, null, '\t'))
         if(iso.validate(replace)) langFiles.push({id: replace, keywords: keyword})
     })
-    return langFiles
+    return [langFiles, gKeyword]
 }
 
 exports.readNewFile = (fileName) => {

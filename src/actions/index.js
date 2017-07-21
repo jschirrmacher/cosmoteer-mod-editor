@@ -13,6 +13,11 @@ export const listModsSucceeded = mods => ({
     mods
 })
 
+export const selectMod = id => ({
+    type: 'SELECT_MOD',
+    id
+})
+
 export const listMods = () => {
     return dispatch => {
         dispatch(listModsLoading(true))

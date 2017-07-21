@@ -1,10 +1,11 @@
 import { combineReducers } from 'redux'
-import {listModsIsLoading, listModsHasError, listMods} from './listMods'
+import {listModsIsLoading, listModsHasError, listMods, selectMod} from './listMods'
 
 const moditor = combineReducers({
     listModsIsLoading,
     listModsHasError,
-    listMods
+    listMods,
+    selectMod
 })
 
 export default moditor

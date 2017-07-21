@@ -27,3 +27,11 @@ export const listMods = (state = [], action = '') => {
             return state
     }
 }
+
+export const selectMod = (state = [], action = '') => {
+    if(action.type === 'SELECT_MOD'){
+        return action.id
+    } else{
+        return state
+    }
+}

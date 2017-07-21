@@ -16,12 +16,18 @@ class App extends Component {
     }
 
     componentWillMount() {
+        this.setState({ isLoading: true })
         fetch('/mods')
+            .then(res => {
+                if (!res.ok) {
+                    throw Error(res.statusText)
+                }
+                this.setState({ isLoading: false })
+                return res
+            })
             .then(res => res.json())
             .then(state => this.setState({mods: state.mods.sort(App.titleSort)}))
-            .catch(e => {
-                throw new Error('fetch failed: ' + e)
-            })
+            .catch(error => this.setState(error))
     }
 
     addNewMod(mod) {
@@ -51,22 +57,27 @@ class App extends Component {
     }
 
     render() {
+        let modList = (<div>
+            <ul className="ModList">
+                    {this.state.mods.length
+                        ? this.state.mods.map((row) => <Row key={row.id} data={row}
+                        selected={this.state.selectedRow === row.id}
+                        rowChanged={v => this.rowChanged(v)}
+                        onUserClick={() => this.rowSelected(row.id)}
+                    />)
+                        : 'No Mods found'
+                        }
+            </ul>
+            < AddMod addNewMod={mod => this.addNewMod(mod)}/>
+        </div>)
+
         return <div className="App">
             <div className="App-header">
                 <img src="https://cosmoteer.net/site_images/logo.png" className="App-logo" alt="logo" />
                 <h2>Mod Editor</h2>
             </div>
-            <ul className="ModList">
-                {this.state.mods.length
-                    ? this.state.mods.map((row) => <Row key={row.id} data={row}
-                        selected={this.state.selectedRow === row.id}
-                        rowChanged={v => this.rowChanged(v)}
-                        onUserClick={() => this.rowSelected(row.id)}
-                    />)
-                    : 'No Mods found'
-                }
-            </ul>
-            <AddMod addNewMod={mod => this.addNewMod(mod)}/>
+            {this.state.error ? <p className="error">{this.state.error}</p> :
+                this.state.isLoading ? <p>Loading…</p> : modList}
         </div>
     }
 }

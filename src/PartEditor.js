@@ -1,9 +1,9 @@
-import React, { Component } from 'react'                 // eslint-disable-line no-unused-vars
-import ShipLibraryEditForm from './ShipLibraryEditForm'
-import MainModOptions from './MainModOptions'
-import AddLanguage from './addLanguage'
-import LanguageEditor from './LanguageEditor'
-import ShipLibrary from './shipLibrary'
+import React, { Component } from 'react'                // eslint-disable-line no-unused-vars
+import ShipLibraryEditForm from './ShipLibraryEditForm' // eslint-disable-line no-unused-vars
+import MainModOptions from './MainModOptions'           // eslint-disable-line no-unused-vars
+import AddLanguage from './addLanguage'                 // eslint-disable-line no-unused-vars
+import LanguageEditor from './LanguageEditor'           // eslint-disable-line no-unused-vars
+import ShipLibrary from './shipLibrary'                 // eslint-disable-line no-unused-vars
 
 class PartEditor extends Component {
     selectAction(select) {
@@ -26,6 +26,7 @@ class PartEditor extends Component {
     resetAction(){
         this.setState({action: undefined})
     }
+
 
     render() {
         let action = (

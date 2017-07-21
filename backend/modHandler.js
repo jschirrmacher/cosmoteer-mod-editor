@@ -35,9 +35,7 @@ function readModFile(modId, dir = '/mods/', test = false) {
 
 function saveModFile(mod) {
     winston.debug('Saving')
-    winston.info(mod)
     fs.writeFileSync('./mods/' + mod.ignore.id + '/mod.txt', parser.toString(Object.assign({}, mod)))
-    winston.info(mod)
     return mod
 }
 
@@ -267,6 +265,7 @@ module.exports = {
                     }
                 })
             })
+            saveModFile(mods[req.params.mod])
             res.json(mods[req.params.mod].ignore.languages)
         } else res.json({error: 'Mod not found!'})
     }

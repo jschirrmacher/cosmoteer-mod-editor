@@ -6,10 +6,14 @@ import React, { Component } from 'react'               // eslint-disable-line no
 class MainModOptions extends Component {
 
     componentWillMount(){
+        this.data = {}
         fetch('/mods/mainModData/' + this.props.modId)
             .then(res => res.json())
             .then(result => {
                 this.setState({data: result})
+                console.log(this.state)
+                console.log(this.state.data.stringsfolder)
+                this.data.stringsfolder.value = this.state.data.stringsfolder
             })
             .catch(e => alert(e))
     }
@@ -26,7 +30,7 @@ class MainModOptions extends Component {
     upload(e) {
         for(let data in this.state.data){
             if(!this.state.data.hasOwnProperty(data)) continue
-            fetch('/mods/mainModData/' + this.props.modId + '/' + data + '/' + this.state.data[data], {method: 'POST'})
+            fetch('/mods/mainModData/' + this.props.modId + '/' + data + '/' + this.data.stringsfolder.value, {method: 'POST'})
                 .then(res => res.json())
                 .then(() => this.props.update())
                 .catch(() => {
@@ -43,8 +47,8 @@ class MainModOptions extends Component {
                 <form>
                     <p>Mod Options</p>
                     <label>Strings Folder for Language Files</label>
-                    <input type="text" name="stringsfolder" placeholder="Folder for languages" value ={this.state ? this.state.data.stringsfolder : ''}
-                        onChange={event => this.change(event)} />
+                    <input type="text" name="stringsfolder" placeholder="Folder for languages"
+                        ref={input => this.data.stringsfolder = input}/>
                     <button onClick={(e) => this.upload(e)}>{'Save changes'}</button>
                 </form>
             </div>

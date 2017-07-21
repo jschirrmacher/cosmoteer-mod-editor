@@ -41,6 +41,7 @@ app.post('/mods', modHandler.createMod)
 app.post('/mods/upload/picture/:mod', modHandler.uploadPicture)
 app.post('/mods/mainModData/:mod/:id/:value', modHandler.changeMainModData)
 app.post('/mods/:mod/parts/:type', modHandler.createPart)
+app.post('/mods/:mod/updateLanguage', modHandler.editLanguage)
 
 app.put('/mods/:mod', modHandler.updateMod)
 app.put('/mods/:mod/parts/:type', modHandler.updatePart)

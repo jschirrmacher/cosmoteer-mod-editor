@@ -82,4 +82,7 @@ label {
 .dropdown:hover .dropbtn {
   background-color: #3e8e41; }
 
+.languageInput {
+  width: 100px; }
+
 /*# sourceMappingURL=ModRow.css.map */

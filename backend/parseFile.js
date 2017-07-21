@@ -6,6 +6,7 @@ const fs = require('fs')
 const tokeniser = require('js-tokeniser')
 const winston = require('winston')
 const iso = require('iso-639-1')
+const path = require('path')
 
 
 const newRules = require('./rules')
@@ -26,7 +27,7 @@ exports.getLanguages = (directoryPath) => {
     let files = fs.readdirSync(directoryPath)
     files.forEach(file => {
         var replace = file.replace('.txt', '')
-        if(iso.validate(replace)) langFiles.push({id: replace, keywords: []})
+        if(iso.validate(replace)) langFiles.push({id: replace, keywords: {}})
     })
     return langFiles
 }
@@ -75,7 +76,25 @@ function handleContinuation(str) {
     return str.split(/\\\n/).map(cleanse).join('')
 }
 
-//Will delete ignore, only send copy not be reference!!!
+function saveIgnore(mod){
+    //Save languages
+    if(mod.ignore === undefined) return mod
+    let location = mod.stringsfolder
+    Object.keys(mod.ignore.languages).forEach(lang => {
+        let stream = fs.createWriteStream(path.join(__dirname, 'mods', mod.ignore.id, location,
+            mod.ignore.languages[lang].id + '.txt'))
+        //Write out value
+        Object.keys(mod.ignore.languages[lang].keywords).forEach(w => {
+            stream.write(w +  ' = ' + mod.ignore.languages[lang].keywords[w] + '\n')
+        })
+        stream.end()
+    })
+
+    delete mod.ignore
+    return mod
+}
+
+//Will delete ignore, only send copy not by reference!!!
 function toString(value, level = 0, useTabs = true) {
     function tabs(str, num = level) {
         return Array(num).join('\t') + str
@@ -92,7 +111,7 @@ function toString(value, level = 0, useTabs = true) {
     function isNumeric(value) {
         return !Number.isNaN(value) && Number.isFinite(value)
     }
-    delete value.ignore
+    saveIgnore(value)
     if (isArray(value)) {
         return (useTabs ? tabs('[\n') : '[\n')
             + value.map(entry => toString(entry, level + 1)).join('\n') + '\n'

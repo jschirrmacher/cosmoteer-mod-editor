@@ -49,8 +49,8 @@ class App extends Component {
                         rowChanged={v => this.rowChanged(v)}
                         onUserClick={() => this.rowSelected(row.id)}
                     />)
-                        : 'No Mods found'
-                        }
+                    : 'No Mods found'
+                }
             </ul>
             < AddMod addNewMod={mod => this.addNewMod(mod)}/>
         </div>)

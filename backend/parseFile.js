@@ -27,7 +27,15 @@ exports.getLanguages = (directoryPath) => {
     let files = fs.readdirSync(directoryPath)
     files.forEach(file => {
         var replace = file.replace('.txt', '')
-        if(iso.validate(replace)) langFiles.push({id: replace, keywords: {}})
+        var data = tokeniser(fs.readFileSync(path.join(directoryPath, file)).toString(), newRules)
+        var keyword = {}
+        data.forEach(token => {
+            if(token.type === 'definition'){
+                keyword[token.matches[1]] = token.matches[2]
+            }
+        })
+        winston.debug(JSON.stringify(keyword, null, '\t'))
+        if(iso.validate(replace)) langFiles.push({id: replace, keywords: keyword})
     })
     return langFiles
 }

@@ -3,7 +3,7 @@ import React from 'react'
 class AddMod extends React.Component {
     constructor(props) {
         super(props)
-        this.state = {id: '', name: '', author: '', version: ''}
+        this.data = {}
     }
 
     postNewMod(data, success, error) {
@@ -31,18 +31,10 @@ class AddMod extends React.Component {
 
     handlePostResult(response) {
         this.props.addNewMod(response)
-        this.setState({id: '', name: '', author: '', version: ''})
     }
 
     handlePostError(error) {
         this.setState({error: error})
-    }
-
-    inputChange(e) {
-        this.setState(state => {
-            state[e.target.name] = e.target.value
-            return state
-        })
     }
 
     render() {
@@ -52,35 +44,31 @@ class AddMod extends React.Component {
                 <form className="addModForm" onSubmit={e => {
                     e.preventDefault()
                     this.postNewMod({
-                        id: this.state.id.trim(),
-                        name: this.state.name.trim(),
-                        author: this.state.author.trim(),
-                        version: this.state.version.trim()
+                        id: this.data.modId.value.trim(),
+                        name: this.data.name.value.trim(),
+                        author: this.data.author.value.trim(),
+                        version: this.data.version.value.trim()
                     }, result => this.handlePostResult(result), error => this.handlePostError(error))
                 }}>
                     <div className="newModDiv" id="newModID">
                         Mod ID:
-                        <input className="newModInput" type="text" name="id" value={this.state.id}
-                            onChange={e => this.inputChange(e)}/>
+                        <input className="newModInput" type="text" name="id" ref={i => this.data.modId = i}/>
                     </div>
                     <div className="newModDiv" id="newModName">
                         Name:
-                        <input className="newModInput" type="text" name="name" value={this.state.name}
-                            onChange={e => this.inputChange(e)} />
+                        <input className="newModInput" type="text" name="name" ref={i => this.data.name = i}/>
                     </div>
                     <div className="newModDiv" id="newModAuthor">
                         Author:
-                        <input className="newModInput" type="text" name="author" value={this.state.author}
-                            onChange={e => this.inputChange(e)} />
+                        <input className="newModInput" type="text" name="author" ref={i => this.data.author = i}/>
                     </div>
                     <div className="newModDiv" id="newModVersion">
                         Version:
-                        <input className="newModInput" type="text" name="version" value={this.state.version}
-                            onChange={e => this.inputChange(e)} />
+                        <input className="newModInput" type="text" name="version" ref={i => this.data.version = i}/>
                     </div>
                     <input className="newModSubmit" type="submit" value="Create Mod"/>
                 </form>
-                {this.state.error && <p id="newModError">{this.state.error}</p>}
+                {this.state && this.state.error ?  <p id="newModError">{this.state.error}</p> : ''}
             </div>
         )
     }

@@ -137,7 +137,7 @@ module.exports = {
                     break
                 case 'combine':
                     if(line.quote){
-                        txt += line.text + '\'' + req.body[line.value] + '\' \n'
+                        txt += line.text + '\"' + req.body[line.value] + '\"' \n'
                     } else{
                         txt += line.text + req.body[line.value] + '\n'
                     }

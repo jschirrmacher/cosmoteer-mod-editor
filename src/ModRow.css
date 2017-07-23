@@ -95,6 +95,7 @@ label {
 
 .ship {
   width: 64px;
-  height: 64px; }
+  height: 64px;
+  margin: 2px; }
 
 /*# sourceMappingURL=ModRow.css.map */

@@ -8,7 +8,8 @@
     position: absolute;
     left: 20px;
     width: 80px;
-    height: 80px; }
+    height: 80px;
+    cursor: pointer; }
   .ModList > li .modTitleContainer input[name='title'] {
     font-size: 120%; }
   .ModList > li .modTitleContainer .description {

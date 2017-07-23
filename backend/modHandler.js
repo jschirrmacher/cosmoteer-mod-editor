@@ -158,21 +158,25 @@ module.exports = {
 
     uploadPicture: (req,res) => {
         const modId = req.params.mod
-        if (!req.files || !req.files[modId + 'file-input']) {
-            res.json({error: 'Missing upload file'})
+        if (!readModFile(modId)) {
+            res.json({error: 'Mod not found'})
         } else {
-            let file = req.files[modId + 'file-input']
-            let newPath = path.join(__dirname, 'mods', modId, file.name)
-            file.mv(newPath, err => {
-                if (err) {
-                    res.json({error: err})
-                } else {
-                    mods[modId].logo = file.name
-                    winston.debug('Uploaded picture to mod: ' + mods[modId].ignore.id)
-                    saveModFile(mods[modId])
-                    res.json('mods/' + modId + '/media/' + file.name)
-                }
-            })
+            if (!req.files || !req.files.picture) {
+                res.json({error: 'Missing upload file'})
+            } else {
+                let file = req.files.picture
+                let newPath = path.join(__dirname, 'mods', modId, file.name)
+                file.mv(newPath, err => {
+                    if (err) {
+                        res.json({error: err})
+                    } else {
+                        mods[modId].logo = file.name
+                        winston.debug('Uploaded picture to mod: ' + mods[modId].ignore.id)
+                        saveModFile(mods[modId])
+                        res.json('mods/' + modId + '/media/' + file.name)
+                    }
+                })
+            }
         }
     },
 

@@ -8,7 +8,7 @@
 const express = require('express')
 const modHandler = require('./modHandler')
 const bodyParser = require('body-parser')
-const busboy = require('connect-busboy')
+const fileUpload = require('express-fileupload')
 const winston = require('winston')
 const expressWinston = require('express-winston')
 
@@ -25,7 +25,7 @@ app.use(expressWinston.logger({
     meta: false
 }))
 
-app.use(busboy({limits: { fileSize: 10 * 1024 * 1024}}))
+app.use(fileUpload())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:false}))
 

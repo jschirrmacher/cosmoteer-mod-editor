@@ -278,45 +278,24 @@ module.exports = {
     },
 
     uploadPictures: (req, res) => {
-        const modName = req.params.mod
-        if(mods[modName]){
-            let ship = {}
-            if (req.busboy) {
-                //Save picture
-                req.busboy.on('file', (fieldName, fileStream, fileName) => {
-                    winston.debug('File: ' + fileName)
-                    let newPath = path.join(__dirname, 'mods', modName, req.params.folder, fileName)
-                    let writeStream = fs.createWriteStream(newPath)
-                    writeStream.on('end' , () => {
-                        fileStream.unpipe()
-                        winston.debug('Ended the writing!')
-                    })
-
-                    writeStream.on('close', () => {
-                        winston.debug('Closed the file stream!')
-                    })
-
-                    fileStream.pipe(writeStream)
-
-                    ship.image = fileName
+        const modId = req.params.mod
+        if (!readModFile(modId)) {
+            res.json({error: 'Mod not found'})
+        } else {
+            let ships = []
+            Object.keys(req.files).forEach(field => {
+                let fileName = req.files[field].name
+                winston.debug('File: ' + fileName)
+                let newPath = path.join(__dirname, 'mods', modId, req.params.folder, fileName)
+                req.files[field].mv(newPath, err => {
+                    if (err) {
+                        throw err
+                    } else {
+                        ships.push({image: fileName})
+                    }
                 })
-                req.busboy.on('field', function(fieldname, val) {
-                    winston.debug('Field [' + fieldname + ']: value: ' + val)
-                    ship[fieldname] = val
-                })
-
-                req.busboy.on('finish', () => {
-                    winston.debug('Finished busboy!')
-                })
-                res.json({success: true})
-                req.pipe(req.busboy)
-                winston.debug(ship)
-            } else{
-                winston.error('req.busboy was not added to the picture upload!')
-                res.json({error: 'Error!'})
-            }
-        } else{
-            res.json({error:'Mod does not exist!'})
+            })
+            res.json({ships})
         }
     },
 

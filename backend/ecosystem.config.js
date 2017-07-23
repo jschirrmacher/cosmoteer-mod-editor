@@ -5,6 +5,7 @@ module.exports = {
         watch          : true,
         "ignore_watch" : ['mods'],
         env: {
+            "LOG_LEVEL": "debug",
             "NODE_ENV": "development"
         },
         env_production : {

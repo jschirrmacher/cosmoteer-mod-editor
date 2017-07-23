@@ -21,14 +21,11 @@ class ShipLibrary extends Component {
     }
 
     submitForm(event) {
-        event.preventDefault()
-        let form = event.target
         fetch('/mods/'+ this.props.modId +'/uploadPicture/' + this.props.data.folder ,{  method: 'POST',
-            body: new FormData(form)
+            body: new FormData(event.target.form)
         })
             .then(res => res.json())
             .then(response => {
-                alert(response)
                 if (response.error) {
                     throw response.error
                 }
@@ -38,38 +35,26 @@ class ShipLibrary extends Component {
 
     }
 
-    static showImage(event){
-        let file = event.target.files[0]
-        if(file){
-            let reader = new FileReader(file)
-            reader.onload = (e) => {
-                this.setState({
-                    src: e.target.result
-                })
-            }
-        }
-    }
-
     render() {
         let ships = this.state ? this.state.ships : {paths:[]}
         let shipDiv
-        if(ships !== undefined && !ships.error) shipDiv = ships.paths.map(ship => <img className="ship" src={ship}/>)
-        else if (ships !== undefined) ships = <p>{ships.error}</p>
+        if(ships && !ships.error) {
+            shipDiv = ships.paths.map(ship => <img className="ship" src={ship} alt="Ship" />)
+        }
+        else if (ships) {
+            shipDiv = <p>{ships.error}</p>
+        }
         return (
             <li>
                 <p>Directory: {this.props.data.folder}</p>
                 <p>Namekey: {this.props.data.namekey}</p>
                 {shipDiv}
-                <form onSubmit={i => this.submitForm(i)}>
-                    <div className="image-upload shipAdder" >
-                        <p>Add ship</p>
-                        <label htmlFor={this.props.data.namekey + 'file-input-x'}>
-                            <img className="imageUpload" src={this.state.src} alt="Mod Logo"/>
-                        </label>
-                        <input className="file-input" id={this.props.data.namekey + 'file-input-x'}
-                            onChange={(e) => ShipLibrary.showImage(e)}type="file" name="picture"/>
-                        <button >Submit</button>
-                    </div>
+                <form className="image-upload shipAdder">
+                    <label htmlFor={this.props.data.namekey + 'file-input-x'}>
+                        <img className="imageUpload" src={this.state.src} alt="New ship"/>
+                    </label>
+                    <input className="file-input" id={this.props.data.namekey + 'file-input-x'}
+                        onChange={e => this.submitForm(e)} type="file" name="picture"/>
                 </form>
             </li>
         )

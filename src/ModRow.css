@@ -87,7 +87,7 @@ label {
   width: 100px; }
 
 .shipAdder {
-  border: 1px solid black; }
+  display: inline-block; }
 
 .imageUpload {
   width: 64px;

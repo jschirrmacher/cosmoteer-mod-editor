@@ -157,24 +157,22 @@ module.exports = {
     },
 
     uploadPicture: (req,res) => {
-        if (req.busboy) {
-            req.busboy.on('file', (fieldName, fileStream, fileName) => {
-                //Save picture
-                const modName = req.params.mod
-                let newPath = path.join(__dirname, 'mods', modName, fileName)
-                fileStream.pipe(fs.createWriteStream(newPath))
-                //Change the mod in mods
-                if((mods[req.params.mod].logo = fileName)){
-                    winston.debug('Uploaded picture to mod: ' + mods[req.params.mod].ignore.id)
-                    saveModFile(mods[req.params.mod])
+        const modId = req.params.mod
+        if (!req.files || !req.files[modId + 'file-input']) {
+            res.json({error: 'Missing upload file'})
+        } else {
+            let file = req.files[modId + 'file-input']
+            let newPath = path.join(__dirname, 'mods', modId, file.name)
+            file.mv(newPath, err => {
+                if (err) {
+                    res.json({error: err})
+                } else {
+                    mods[modId].logo = file.name
+                    winston.debug('Uploaded picture to mod: ' + mods[modId].ignore.id)
+                    saveModFile(mods[modId])
+                    res.json('mods/' + modId + '/media/' + file.name)
                 }
-                //Send back new logo path
-                res.json('mods/' + modName + '/media/' + fileName)
             })
-            req.pipe(req.busboy)
-        } else{
-            winston.error('req.busboy was not added to the picture upload!')
-            res.json('Error!')
         }
     },
 

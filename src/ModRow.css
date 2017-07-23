@@ -85,4 +85,15 @@ label {
 .languageInput {
   width: 100px; }
 
+.shipAdder {
+  border: 1px solid black; }
+
+.imageUpload {
+  width: 64px;
+  height: 64px; }
+
+.ship {
+  width: 64px;
+  height: 64px; }
+
 /*# sourceMappingURL=ModRow.css.map */

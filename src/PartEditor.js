@@ -55,7 +55,7 @@ class PartEditor extends Component {
                     break
             }
         }
-        let shipLibraries = this.state && this.state.data && this.state.data.shiplibraries ? this.state.data.shiplibraries.map(lib => <ShipLibrary data={lib}/>) : ''
+        let shipLibraries = this.state && this.state.data && this.state.data.shiplibraries ? this.state.data.shiplibraries.map(lib => <ShipLibrary modId={this.props.modId} data={lib}/>) : ''
 
         return (
             <div>

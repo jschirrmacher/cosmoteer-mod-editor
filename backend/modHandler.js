@@ -108,8 +108,11 @@ module.exports = {
     },
 
     getMediaFile: (req, res) => {
-        let file = path.join(__dirname, 'mods', req.params.mod, req.params.file)
+        let file = req.params.dir ? path.join(__dirname, 'mods', req.params.mod, req.params.dir, req.params.file) :
+            path.join(__dirname, 'mods', req.params.mod, req.params.file)
+        winston.debug(file)
         if (fs.existsSync(file)) {
+            winston.debug('Sending file')
             res.sendFile(file)
         } else {
             res.sendFile(path.join(__dirname, 'plug.png'))
@@ -272,5 +275,63 @@ module.exports = {
             saveModFile(mods[req.params.mod])
             res.json(mods[req.params.mod].ignore.languages)
         } else res.json({error: 'Mod not found!'})
+    },
+
+    uploadPictures: (req, res) => {
+        const modName = req.params.mod
+        if(mods[modName]){
+            let ship = {}
+            if (req.busboy) {
+                //Save picture
+                req.busboy.on('file', (fieldName, fileStream, fileName) => {
+                    winston.debug('File: ' + fileName)
+                    let newPath = path.join(__dirname, 'mods', modName, req.params.folder, fileName)
+                    let writeStream = fs.createWriteStream(newPath)
+                    writeStream.on('end' , () => {
+                        fileStream.unpipe()
+                        winston.debug('Ended the writing!')
+                    })
+
+                    writeStream.on('close', () => {
+                        winston.debug('Closed the file stream!')
+                    })
+
+                    fileStream.pipe(writeStream)
+
+                    ship.image = fileName
+                })
+                req.busboy.on('field', function(fieldname, val) {
+                    winston.debug('Field [' + fieldname + ']: value: ' + val)
+                    ship[fieldname] = val
+                })
+
+                req.busboy.on('finish', () => {
+                    winston.debug('Finished busboy!')
+                })
+                res.json({success: true})
+                req.pipe(req.busboy)
+                winston.debug(ship)
+            } else{
+                winston.error('req.busboy was not added to the picture upload!')
+                res.json({error: 'Error!'})
+            }
+        } else{
+            res.json({error:'Mod does not exist!'})
+        }
+    },
+
+    getShipLibrary: (req, res) => {
+        let modName = req.params.mod
+        if(mods[modName]){
+            var path2 = path.join(__dirname, 'mods', modName, req.params.folder)
+            let paths = fs.readdirSync(path2)
+            paths = paths.map(Path => {
+                return path.join('mods', modName, 'media', req.params.folder, Path)
+            })
+            winston.debug(paths)
+            res.json({paths: paths})
+        } else {
+            res.json({error: 'This mod does not exist!'})
+        }
     }
 }

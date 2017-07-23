@@ -55,7 +55,6 @@ class LanguageEditor extends Component {
                         defaultValue={keyword} ref={input => this.data[lang.id][word] = input}
                         name={word} /></td>
                 })}
-                <button onClick={() => this.uploadChangedLibraries()} >Submit</button>
             </tr>)
         }) : ''
         return (
@@ -63,6 +62,7 @@ class LanguageEditor extends Component {
                 <tbody>
                     {titleRow}
                     {tableBody}
+                    <button onClick={() => this.uploadChangedLibraries()} >Submit</button>
                 </tbody>
             </table>
         )

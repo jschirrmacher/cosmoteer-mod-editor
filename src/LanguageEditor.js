@@ -42,7 +42,7 @@ class LanguageEditor extends Component {
         let state = this.props.data
         let titleRow =
             <tr>
-                <th>Keywords</th>
+                <th className="title">Keywords</th>
                 {state !== undefined ? state.languages.map(lang => <th key={lang.id}> {lang.id} </th>) : ''}
             </tr>
         let tableBody = state !== undefined ? state.keywords.map(word => {

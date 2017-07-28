@@ -1,0 +1,16 @@
+{
+  "NameKey" : {"type": "string"},
+  "IconNameKey" : {"type": "string"},
+  "IDString" : {"type": "string"},
+  "EditorGroup" : {"type": "editorGroup"},
+  "DescriptionKey": {"type": "string"},
+  "Cost" : {"type": "int"},
+  "AIValue" :{"type": "int"},
+  "Size" :  {"type": "2D", "valType" : "int"},
+  "PhysicalRect" :  {"type": "4D", "valType" : "int"},
+  "SaveRect" : {"type": "string", "value":"&PhysicalRect"},
+  "SelectionPriority" : {"type": "int"},
+  "SelectionTypeByRotation" : {"type": "bool"},
+  "MaxHealth" : {"type": "int"},
+  "PenetrationResistance" : {"type": "int"}
+}

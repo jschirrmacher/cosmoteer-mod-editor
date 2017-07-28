@@ -4,6 +4,7 @@ import MainModOptions from './MainModOptions'           // eslint-disable-line n
 import AddLanguage from './addLanguage'                 // eslint-disable-line no-unused-vars
 import LanguageEditor from './LanguageEditor'           // eslint-disable-line no-unused-vars
 import ShipLibrary from './shipLibrary'                 // eslint-disable-line no-unused-vars
+import NewPart from './NewPart'                         // eslint-disable-line no-unused-vars
 
 class PartEditor extends Component {
     selectAction(select) {
@@ -34,18 +35,23 @@ class PartEditor extends Component {
                 <option disabled selected>Select action</option>
                 <option value="createShipLibrary">Create ship library</option>
                 <option value="addLanguage">Add language</option>
+                <option value="addPart">Add Part</option>
             </select>
         )
 
         if (this.state) {
             switch (this.state.action) {
                 case 'createShipLibrary':
-                    action = <ShipLibraryEditForm reset={() => this.resetAction()} create={true}
+                    action = <ShipLibraryEditForm className = "PartList" reset={() => this.resetAction()} create={true}
                         saveComponent={data => this.props.saveComponent(data)} update={() => this.update()} />
                     break
                 case 'addLanguage':
-                    action = <AddLanguage create={true} reset={() => this.resetAction()} update={() => this.update()}
+                    action = <AddLanguage className = "PartList" create={true} reset={() => this.resetAction()} update={() => this.update()}
                         saveComponent={data => this.props.saveComponent(data)} />
+                    break
+                case 'addPart':
+                    action = <NewPart classname = "PartList" modId={this.props.modId}
+                        part="---" />
                     break
                 case undefined:
                     //Ignore
@@ -62,7 +68,7 @@ class PartEditor extends Component {
                 <ul>
                     <li className = "ModList"><MainModOptions update = {() => this.update()}
                         modId ={this.props.modId} reset={() => this.resetAction()}/></li>
-                    <li><LanguageEditor data={this.state? this.state.lang : undefined}
+                    <li className = "ModList"><LanguageEditor data={this.state? this.state.lang : undefined}
                         newData = {() => this.update()} reset={() => this.resetAction()}
                         modId={this.props.modId}/> </li>
                     {shipLibraries}

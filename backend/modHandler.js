@@ -9,6 +9,10 @@ const stripJs = require('strip-js')
 const winston = require('winston')
 const iso = require('iso-639-1')
 
+const baseInfo = require('./templates/baseInfo.json')
+const baseBlock = require('./templates/basePart.json')
+const baseParts = require('./templates/baseBlocks.json')
+
 let mods = {}
 
 function readModFile(modId, dir = '/mods/', test = false) {
@@ -25,6 +29,7 @@ function readModFile(modId, dir = '/mods/', test = false) {
                 modData.ignore.languages = []
                 modData.ignore.keyWords = []
             }
+            modData.ignore.parts = {}
             modData.description = stripJs(modData.description)
             if (!test) {
                 mods[modId] = modData
@@ -83,6 +88,35 @@ function updateLanguage(modId, lang) {
     }
 }
 
+function updatePart(modId, name, data){
+    if(!readModFile(modId)) {
+        return {error: 'Mod not found!'}
+    } else if(mods[modId].ignore.parts[name]){
+        //Update part
+        mods[modId].ignore.parts[name].data = data
+    } else{
+        //Add part
+        //data part
+        winston.debug('Name: ' + name)
+        try{
+            fs.mkdirSync(path.join(__dirname, 'mods', modId, name))
+        } catch (e) {
+            winston.debug('Error when creating new Part(Folder already exists)')
+            winston.debug(e)
+        }
+        mods[modId].ignore.parts[name] = {}
+        mods[modId].ignore.parts[name].data = data
+        mods[modId].ignore.parts[name].dir = name
+        mods[modId].ignore.parts[name].name = name
+        //mod.txt part
+        if(mods[modId].actions === undefined) mods[modId].actions = []
+        //todo: Join multiple additions together
+        mods[modId].actions.push({action: 'Add', addto:'<Ships/Terran/terran.txt>/Terran/Parts',
+            toadd: '&<' + name + '/' + name + '.txt>/Part'})
+        return saveModFile(mods[modId])
+    }
+}
+
 module.exports = {
     readModFile,
 
@@ -137,7 +171,7 @@ module.exports = {
                     break
                 case 'combine':
                     if(line.quote){
-                        txt += line.text + '\"' + req.body[line.value] + '\"' \n'
+                        txt += line.text + '"' + req.body[line.value] + '"\n'
                     } else{
                         txt += line.text + req.body[line.value] + '\n'
                     }
@@ -228,13 +262,16 @@ module.exports = {
         }
         let actions = {
             shipLibrary: () => updateShipLibrary(req.params.mod, req.body.dirName, req.body.titleId, (r) => res.json(r)),
-            language: () => res.json(updateLanguage(req.params.mod, req.body.lang))
+            language: () => res.json(updateLanguage(req.params.mod, req.body.lang)),
+            part: () => res.json(updatePart(req.params.mod, req.body.name, req.body.data))
         }
         try{
             actions[req.params.type]()
         } catch (e) {
             winston.error('Part of unknown type was trying to be created: '+ req.params.type)
             winston.error(e)
+  //          winston.debug('DEBUG INFO: req.body data')
+//            winston.debug(JSON.stringify(req.body, null, '\t'))
             res.json({error: 'Unknown type'})
         }
     },
@@ -314,5 +351,25 @@ module.exports = {
         } else {
             res.json({error: 'This mod does not exist!'})
         }
+    },
+
+    getPart: (req, res) => {
+        let modName = req.params.mod
+        if(mods[modName]){
+            let mod = mods[modName]
+            let part = req.params.part
+            if(mod[part]){
+                //Exists
+                res.json(mod[part])
+            } else {
+                res.json({part: Object.assign(baseInfo, baseBlock)})
+            }
+        } else{
+            res.json({error: 'This mod does not exist!'})
+        }
+    },
+
+    getAllParts: (req, res) => {
+        res.json(baseParts)
     }
 }

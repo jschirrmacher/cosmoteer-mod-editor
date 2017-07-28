@@ -54,6 +54,8 @@ app.get('/mods/:mod/media/:dir/:file', modHandler.getMediaFile)
 app.get('/mods/mainModData/:mod', modHandler.mainModData)
 app.get('/mods/Languages/:mod', modHandler.getLanguageOverview)
 app.get('/mods/:mod/shipLibrary/:folder', modHandler.getShipLibrary)
+app.get('/mods/:mod/getPartInfo/:part', modHandler.getPart)
+app.get('/mods/:mod/getAllParts', modHandler.getAllParts)
 
 app.listen(3001)
 winston.log('info', 'Server running')

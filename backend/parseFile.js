@@ -26,7 +26,9 @@ exports.getLanguages = (directoryPath) => {
     let langFiles = []
     let files = fs.readdirSync(directoryPath)
     let gKeyword = []
+    winston.debug(files)
     files.forEach(file => {
+        winston.debug(file)
         let replace = file.replace('.txt', '')
         let data = tokeniser(fs.readFileSync(path.join(directoryPath, file)).toString(), newRules)
         let keyword = {}
@@ -36,7 +38,7 @@ exports.getLanguages = (directoryPath) => {
                 if(gKeyword.indexOf(token.matches[1]) == -1) gKeyword.push(token.matches[1])
             }
         })
-        winston.debug(JSON.stringify(keyword, null, '\t'))
+        //winston.debug(JSON.stringify(keyword, null, '\t'))
         if(iso.validate(replace)) langFiles.push({id: replace, keywords: keyword})
     })
     return [langFiles, gKeyword]
@@ -100,6 +102,16 @@ function saveIgnore(mod){
         stream.end()
     })
 
+    //Save parts
+    Object.keys(mod.ignore.parts).forEach( part => {
+        let data = {Part: {}}
+        Object.keys(mod.ignore.parts[part].data).forEach(val => {
+            data.Part[val] = mod.ignore.parts[part].data[val].value
+        })
+        winston.debug(JSON.stringify(data, null, '\t'))
+        fs.writeFileSync(path.join(__dirname, 'mods', mod.ignore.id, mod.ignore.parts[part].dir, mod.ignore.parts[part].name + '.txt'), toString(data))
+    })
+
     delete mod.ignore
     return mod
 }
@@ -122,19 +134,27 @@ function toString(value, level = 0, useTabs = true) {
         return !Number.isNaN(value) && Number.isFinite(value)
     }
     saveIgnore(value)
-    if (isArray(value)) {
-        return (useTabs ? tabs('[\n') : '[\n')
-            + value.map(entry => toString(entry, level + 1)).join('\n') + '\n'
-            + tabs(']')
-    } else if (isObject(value)) {
-        let elems = Object.keys(value).map(key => {
-            let concat = isArray(value[key]) || isObject(value[key]) ? ' ' : ' = '
-            return tabs(key + concat, level + 1) + toString(value[key], level + 1, false)
-        }).join('\n') + '\n'
-        return level ? tabs('{\n') + elems + tabs('}') : elems
-    } else {
-        value = isNumeric(value) ? value : '"' + value.replace(/\n/g, '\\n') + '"'
-        return useTabs ? tabs(value) : value
+    try{
+        if (isArray(value)) {
+            return (useTabs ? tabs('[\n') : '[\n')
+                + value.map(entry => toString(entry, level + 1)).join('\n') + '\n'
+                + tabs(']')
+        } else if (isObject(value)) {
+            let elems = Object.keys(value).map(key => {
+                let concat = isArray(value[key]) || isObject(value[key]) ? ' ' : ' = '
+                return tabs(key + concat, level + 1) + toString(value[key], level + 1, false)
+            }).join('\n') + '\n'
+            return level ? tabs('{\n') + elems + tabs('}') : elems
+        } else {
+            value = isNumeric(value) ? value : value.toString().replace(/\n/g, '\\n')
+            if(!isNumeric(value) && value.search(/[ ]/g) !== -1) value = '"' + value + '"'
+            return useTabs ? tabs(value) : value
+        }
+    } catch (e) {
+        winston.debug('Error in toString:')
+        winston.debug(e)
+        winston.debug('-----')
+        winston.debug(value + ' : ' + level)
     }
 }
 

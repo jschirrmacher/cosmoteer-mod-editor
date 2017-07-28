@@ -45,7 +45,7 @@ class MainModOptions extends Component {
         return (
             <div>
                 <form>
-                    <p>Mod Options</p>
+                    <p className="title">Mod Options</p>
                     <label>Strings Folder for Language Files</label>
                     <input type="text" name="stringsfolder" placeholder="Folder for languages"
                         ref={input => this.data.stringsfolder = input}/>
